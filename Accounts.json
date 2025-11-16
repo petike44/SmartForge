@@ -1,0 +1,86 @@
+[
+    {
+        "username": "admin@premiumskies.com",
+        "email": "addsdfsdf@gmail.com",
+        "password": "Admin2025!",
+        "walletAddress": "0xa877908e359a30049a8b0e8e12a3e187316673e8",
+        "privateKey": "0xa1d575f8da8574ad21fc41febe1f44ae6c6eb942e49e0e902398eba749f45f12",
+        "publicKey": "0x4bba33e7e8c0227df1dc2262e7cd90d08e2da0be1ca8ed75f23f69899b217dac26",
+        "balance": 3,
+        "transactions": [],
+        "notifications": [],
+        "networkNodes": []
+    },
+    {
+        "username": "admin_1",
+        "email": "aadmin@gmail.com",
+        "password": "1111",
+        "walletAddress": "0xde8b13215c0c8b089505dc4cdc84839d6e1af57d8a68cfe04e2634a9368aa632",
+        "privateKey": "0x52e9e382d86ce31ad43ae6b180e81f84cdf98b94cdaa4395fe03d09f065af2b4",
+        "publicKey": "0xe96cae29c6fb215d6eade49fccf55377f2a207288573e33c4664d6cde325119f",
+        "balance": 0,
+        "transactions": [],
+        "notifications": [],
+        "networkNodes": []
+    },
+    {
+        "username": "yeti",
+        "email": "fulop.yeti@gmail.com",
+        "password": "tati",
+        "walletAddress": "0x9f3ff17ced4c689996abb0a8b572573ecb3416696831080fb1591530bf5dbc44",
+        "privateKey": "0x38149bea876c973d6aef7f59bde6dc165b3ecedc301040611380b0101832f5e9",
+        "publicKey": "0x265d8c4abcd84fd0afedb7170a3c8687a6f68a0208935d75a2c8e59eecc6e826",
+        "balance": 0,
+        "transactions": [],
+        "notifications": [],
+        "networkNodes": []
+    },
+    {
+        "username": "babawanga",
+        "email": "babawanga@gmail.com",
+        "password": "1212",
+        "walletAddress": "0x9f172d16537c08a14a89cb7abd0bfa467268cc4643845b2833f53eb956440bdf",
+        "privateKey": "0xc5d58f0d6508965e62099819ab0ff68fb592df3aca8040c51f230fd8daa6a1b6",
+        "publicKey": "0xc8a9c1f5d395d689270748dcda649ea19b95e21ccd03a8919634d44cb282c25f",
+        "balance": 0,
+        "transactions": [],
+        "notifications": [],
+        "networkNodes": []
+    },
+    {
+        "username": "aba",
+        "email": "aba@gmail.com",
+        "password": "1",
+        "walletAddress": "0xbb14d924d1dcd6abfc33e133457465d9fbc7fd2b8df40c85586d496c90b92030",
+        "privateKey": "0x4350454b10473f164d171deca30cf88b4055b37680f303b91e05dda2947382e2",
+        "publicKey": "0x897a5703e922faf48804814f512ab7c04358a37ebedd1e3976624a04dc557401",
+        "balance": 0,
+        "transactions": [],
+        "notifications": [],
+        "networkNodes": []
+    },
+    {
+        "username": "ada",
+        "email": "ada@gmail.com",
+        "password": "1111",
+        "walletAddress": "0x8b2e188f2990750e5934ebc0b1ef289bdbebb2eda9831496eaf2ab9ae4731781",
+        "privateKey": "0x1d764d4b69b15da2a51aa0eddfccadcacec9daa858dabf764c4937a36448217a",
+        "publicKey": "0x471b05ebd26c4b995fa3381d24f131941e75df173059acebe3bc95c6fe9fb775",
+        "balance": 0,
+        "transactions": [],
+        "notifications": [],
+        "networkNodes": []
+    },
+    {
+        "username": "dori",
+        "email": "mihalydorottya29@gmail.com",
+        "password": "mosogatogep",
+        "walletAddress": "0xc02813fa7bed4ea66d62681cb2dc58bfced744f3465bd2f4d56a747e169da86c",
+        "privateKey": "0xd6cdc95f26a3214880c397392003c8b0def1ce91c6c0dc781e08087bfc6df367",
+        "publicKey": "0x1e9ac884c3c453c619ae4c816ab0f70064550de3ce30ad85ac7fdc756d203cd5",
+        "balance": 0,
+        "transactions": [],
+        "notifications": [],
+        "networkNodes": []
+    }
+]

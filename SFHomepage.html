@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Cache control to fight Chrome/Opera aggressive caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <title>SmartForge - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- QRCode library (browser build) -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+    <!-- Flatpickr for date picking (time limits) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <!-- Add a version query to help bypass cached CSS -->
+    <link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+    <div class="container">
+        <!-- Home Page Content -->
+        <div class="home-page" id="home-page">
+            <div class="header">
+                <i class="fas fa-bars header-icon" id="menu-toggle"></i>
+                <div class="header-icons">
+                    <i class="fas fa-list header-icon" id="transactions-button"></i>
+                    <i class="fas fa-bell header-icon" id="notifications-button">
+                        <div class="notification-dot" id="notification-dot"></div>
+                    </i>
+                </div>
+            </div>
+            
+            <div class="balance-container" style="background-color:#070707">
+                <div class="balance-header">Current Balance:</div>
+                <div class="balance-display" id="balance-display">
+                    <div class="balance-amount" id="balance-amount">$0.00</div>
+                    <i class="fas fa-chevron-down" id="balance-chevron"></i>
+                </div>
+                <div class="balance-options" id="balance-options">
+                    <div class="balance-option" id="sui-balance-option">
+                        <div class="sui-logo"></div>
+                        <div class="balance-amount">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-row">
+                <div class="action-button" id="send-button">
+                    Send
+                    <i class="fas fa-arrow-up-right-from-square"></i>
+                </div>
+                <div class="action-button" id="receive-button">
+                    Receive
+                    <i class="fas fa-arrow-up-right-from-square"></i>
+                </div>
+            </div>
+            
+            <div class="create-contract-button" id="create-contract-button">
+                Create Contract
+                <i class="fas fa-plus"></i>
+            </div>
+            
+            <div class="explore-section">
+                <div class="explore-heading">Explore</div>
+                <div class="community-blocks">
+                    <div class="community-block sui-community" id="sui-community">
+                        <div class="block-title">Sui Community</div>
+                        <div class="block-description">Join the official Sui community and stay updated</div>
+                    </div>
+                    <div class="block-row">
+                        <div class="community-block sui-dev-community" id="sui-dev-community">
+                            <div class="block-title">Sui Developer Community</div>
+                            <div class="block-description">Connect with developers building on Sui</div>
+                        </div>
+                        <div class="community-block web3-comments" id="web3-comments">
+                            <div class="block-title">Comments of Web3</div>
+                            <div class="block-description">Latest discussions in the Web3 space</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Send Tab Content -->
+        <div class="send-page" id="send-page" style="display:none; justify-content:flex-start;">
+            <div class="header">
+                <i class="fas fa-arrow-left header-icon" id="send-back-button"></i>
+                <div class="header-icons"></div>
+            </div>
+            
+            <h1 style="color:#3c59fa; text-align:left; margin-bottom:20px;">Send</h1>
+            
+            <div class="input-container">
+                <input type="text" class="send-input" placeholder="Receiver address" id="receiver-address">
+            </div>
+            
+            <div class="input-container">
+                <input type="text" class="send-input" placeholder="Amount" id="send-amount">
+            </div>
+            <!-- Inline error for send amount -->
+            <div class="field-error" id="send-amount-error"></div>
+            
+            <div class="balance-section">
+                <div>Balance</div>
+                <div class="balance-line">
+                    <span>Total:</span>
+                    <span id="total-balance">0 SUI</span>
+                </div>
+                <div class="balance-line">
+                    <span>Transaction fee:</span>
+                    <span id="handling-fee">0.001 SUI</span>
+                </div>
+                <div class="balance-line">
+                    <span>Actual amount:</span>
+                    <span id="actual-amount">0 SUI</span>
+                </div>
+            </div>
+            <button id="send-transaction-button" style="width:100%;">Send</button>
+        </div>
+        
+        <!-- Receive Tab Content -->
+        <div class="receive-page" id="receive-page" style="display:none; justify-content:flex-start;">
+            <div class="header">
+                <i class="fas fa-arrow-left header-icon" id="receive-back-button"></i>
+                <div class="header-icons"></div>
+            </div>
+            
+            <h1 style="color:#3c59fa; text-align:left; margin-bottom:20px;">Receive</h1>
+            
+            <div class="qr-container">
+                <canvas id="qr-code" width="200" height="200"></canvas>
+            </div>
+            
+            <div class="wallet-address">
+                <span id="wallet-address-text">0x0000000000000000000000000000000000000000</span>
+            </div>
+            
+            <button id="copy-address-button" style="width:100%;">Copy wallet address</button>
+        </div>
+        
+        <!-- CreateContract Tab Content (Contract Type Page) -->
+        <div class="create-contract-page" id="create-contract-page" style="display:none; justify-content:flex-start;">
+            <div class="header" style="background-color:#070707;">
+                <!-- Left arrow instead of X -->
+                <i class="fas fa-arrow-left header-icon" id="contract-close-button" style="color:#fff;"></i>
+                <div class="header-icons"></div>
+            </div>
+            
+            <h1 style="color:#fff; text-align:left; margin-bottom:20px;">Select Contract Type</h1>
+
+            <!-- Moved "How SmartForge Works" here as heading -->
+            <div class="how-contracts-heading" id="tutorial-heading">
+                <span>Interested in how smart contracts work?</span>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            
+            <div class="contract-options">
+                <div class="contract-option" id="fundraiser-option">
+                    <span>Fund Raiser</span>
+                    <i class="fas fa-chevron-right" style="color:#070707;"></i>
+                </div>
+                
+                <div class="contract-option" style="display:none">
+                    <span>Trade</span>
+                    <i class="fas fa-chevron-right" style="color:#070707;"></i>
+                </div>
+                
+                <div class="contract-option" style="display:none">
+                    <span>Exchange</span>
+                    <i class="fas fa-chevron-right" style="color:#070707;"></i>
+                </div>
+                
+                <div class="contract-option" id="escrow-option">
+                    <span>Escrow</span>
+                    <i class="fas fa-chevron-right" style="color:#070707;"></i>
+                </div>
+                
+                <div class="contract-option rewards-option" style="display:none">
+                    <span>Rewards</span >
+                    <i class="fas fa-chevron-right" style="color:#fff;"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fund Raiser Tab Content -->
+        <div class="fundraiser-page" id="fundraiser-page" style="display:none; justify-content:flex-start;">
+            <div class="header">
+                <i class="fas fa-arrow-left header-icon" id="fundraiser-back-button"></i>
+                <i class="fas fa-times header-icon" id="fundraiser-close-button" style="color:#fff;"></i>
+            </div>
+            
+            <h1 style="color:#3c59fa; text-align:left; margin-bottom:20px;">Fund Raiser</h1>
+            <h2 style="color:#fff; text-align:left; margin-bottom:20px;">Parameters</h2>
+            
+            <div class="input-group">
+                <div class="input-container">
+                    <input type="text" class="contract-input" placeholder="Receiver address" id="fundraiser-receiver">
+                </div>
+                
+                <div class="input-container">
+                    <input type="text" class="contract-input" placeholder="Goal amount" id="fundraiser-goal">
+                </div>
+                
+                <div class="input-container">
+                    <!-- Flatpickr date picker used here -->
+                    <input type="text" class="contract-input" placeholder="Time limit" id="fundraiser-time">
+                </div>
+            </div>
+            
+            <button id="deploy-fundraiser-button" style="width:100%;">Deploy</button>
+        </div>
+
+        <!-- Escrow Tab Content -->
+        <div class="escrow-page" id="escrow-page" style="display:none; justify-content:flex-start;">
+            <div class="header">
+                <i class="fas fa-arrow-left header-icon" id="escrow-back-button"></i>
+                <i class="fas fa-times header-icon" id="escrow-close-button" style="color:#fff;"></i>
+            </div>
+            
+            <h1 style="color:#3c59fa; text-align:left; margin-bottom:20px;">Escrow</h1>
+            <h2 style="color:#fff; text-align:left; margin-bottom:20px;">Parameters</h2>
+            
+            <div class="input-group">
+                <div class="input-container">
+                    <input type="text" class="contract-input" placeholder="Receiver address" id="escrow-receiver">
+                </div>
+                
+                <div class="input-container">
+                    <input type="text" class="contract-input" placeholder="Sender address" id="escrow-sender">
+                </div>
+                
+                <div class="input-container">
+                    <input type="text" class="contract-input" placeholder="Amount" id="escrow-amount">
+                </div>
+                
+                <div class="input-container">
+                    <input type="text" class="contract-input" placeholder="Deployment trigger" id="escrow-trigger">
+                </div>
+            </div>
+            
+            <button id="deploy-escrow-button" style="width:100%;">Deploy</button>
+        </div>
+
+        <!-- Account Tab Content -->
+        <div class="account-page" id="account-page" style="display:none; justify-content:flex-start;">
+            <div class="header">
+                <i class="fas fa-arrow-left header-icon" id="account-back-button"></i>
+                <div class="header-icons"></div>
+            </div>
+            <h1 style="color:#3c59fa; text-align:left; margin-bottom:20px;">Account</h1>
+            <div class="settings-content">
+                <p style="color:#ffffff; margin-bottom:10px;">
+                    Manage your SmartForge account details and preferences.
+                </p>
+                <div class="input-container">
+                    <input type="text" class="contract-input" id="account-display-name" placeholder="Display name">
+                </div>
+                <div class="input-container">
+                    <input type="email" class="contract-input" id="account-email" placeholder="Email address">
+                </div>
+                <!-- Password change toggle + fields -->
+                <div class="input-container">
+                    <button type="button" id="toggle-password-change" class="password-toggle-btn">
+                        Change password
+                    </button>
+                </div>
+                <div class="password-change-fields" id="password-change-fields" style="display:none;">
+                    <div class="input-container">
+                        <input type="password" class="contract-input" id="account-old-password" placeholder="Old password">
+                    </div>
+                    <div class="input-container">
+                        <input type="password" class="contract-input" id="account-new-password" placeholder="New password">
+                    </div>
+                </div>
+                <button id="account-save-button" style="width:100%; margin-top:10px;">Save changes</button>
+            </div>
+        </div>
+
+        <!-- Security Tab Content -->
+        <div class="security-page" id="security-page" style="display:none; justify-content:flex-start;">
+            <div class="header">
+                <i class="fas fa-arrow-left header-icon" id="security-back-button"></i>
+                <div class="header-icons"></div>
+            </div>
+            <h1 style="color:#3c59fa; text-align:left; margin-bottom:20px;">Security</h1>
+            <div class="settings-content">
+                <p style="color:#ffffff; margin-bottom:10px;">
+                    Configure security options for your wallet and contracts.
+                </p>
+                <div class="settings-row">
+                    <div>
+                        <i class="fas fa-lock settings-icon"></i>
+                        <span>Two-factor authentication</span>
+                    </div>
+                    <i class="fas fa-chevron-right chevron-icon"></i>
+                </div>
+                <div class="settings-row">
+                    <div>
+                        <i class="fas fa-key settings-icon"></i>
+                        <span>Backup & recovery</span>
+                    </div>
+                    <i class="fas fa-chevron-right chevron-icon"></i>
+                </div>
+                <div class="settings-row">
+                    <div>
+                        <i class="fas fa-shield-alt settings-icon"></i>
+                        <span>Device management</span>
+                    </div>
+                    <i class="fas fa-chevron-right chevron-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Limits Tab Content -->
+        <div class="limits-page" id="limits-page" style="display:none; justify-content:flex-start;">
+            <div class="header">
+                <i class="fas fa-arrow-left header-icon" id="limits-back-button"></i>
+                <div class="header-icons"></div>
+            </div>
+            <h1 style="color:#3c59fa; text-align:left; margin-bottom:20px;">Limits</h1>
+            <div class="settings-content">
+                <p style="color:#ffffff; margin-bottom:10px;">
+                    Set daily and transaction limits for your SmartForge wallet.
+                </p>
+                <div class="input-container">
+                    <input type="number" class="contract-input" id="daily-limit-input" placeholder="Daily send limit (SUI)">
+                </div>
+                <div class="input-container">
+                    <input type="number" class="contract-input" id="single-tx-limit-input" placeholder="Single transaction limit (SUI)">
+                </div>
+                <!-- Optional: per-account global time limit using the same calendar style -->
+                <div class="input-container">
+                    <input type="text" class="contract-input" id="account-time-limit" placeholder="Global time limit date">
+                </div>
+
+                <button id="limits-update-button" style="width:100%; margin-top:10px;">Update limits</button>
+            </div>
+        </div>
+
+        <!-- FAQ Tab Content -->
+        <div class="faq-page" id="faq-page" style="display:none; justify-content:flex-start;">
+            <div class="header">
+                <i class="fas fa-arrow-left header-icon" id="faq-back-button"></i>
+                <div class="header-icons"></div>
+            </div>
+            <h1 style="color:#3c59fa; text-align:left; margin-bottom:20px;">FAQ</h1>
+            <div class="settings-content" style="color:#ffffff;">
+                <h3>What is SmartForge?</h3>
+                <p>SmartForge is a wallet and contract hub built on the Sui blockchain.</p>
+                <h3>How do I create my first contract?</h3>
+                <p>From the home page, tap "Create Contract" and follow the guided steps.</p>
+                <h3>Where can I see my deployed contracts?</h3>
+                <p>Future versions will include a dedicated contracts dashboard.</p>
+            </div>
+        </div>
+
+        <!-- Help Center Tab Content -->
+        <div class="help-center-page" id="help-center-page" style="display:none; justify-content:flex-start;">
+            <div class="header">
+                <i class="fas fa-arrow-left header-icon" id="help-center-back-button"></i>
+                <div class="header-icons"></div>
+            </div>
+            <h1 style="color:#3c59fa; text-align:left; margin-bottom:20px;">Help Center</h1>
+            <div class="settings-content" style="color:#ffffff;">
+                <p>Need help with SmartForge?</p>
+                <p>Email: support@smartforge.app (placeholder)</p>
+                <p>Join the Sui Community to ask questions and get support.</p>
+                <button style="width:100%; margin-top:10px;" id="help-center-sui-button">
+                    Go to Sui Community
+                </button>
+            </div>
+        </div>
+
+        <!-- Tutorial / How it works Tab Content -->
+        <div class="tutorial-page" id="tutorial-page" style="display:none; justify-content:flex-start;">
+            <div class="header">
+                <i class="fas fa-arrow-left header-icon" id="tutorial-back-button"></i>
+                <div class="header-icons"></div>
+            </div>
+            <h1 style="color:#3c59fa; text-align:left; margin-bottom:20px;">How SmartForge Works</h1>
+            <div class="tutorial-slider">
+                <div class="tutorial-slide" data-index="0">
+                    <h2 style="color:#ffffff;">Slide 1 – Connect & Explore</h2>
+                    <p style="color:#ffffff;">
+                        After logging in, check your SUI balance at the top and explore the community section
+                        to stay updated with Sui and Web3.
+                    </p>
+                </div>
+                <div class="tutorial-slide" data-index="1">
+                    <h2 style="color:#ffffff;">Slide 2 – Send & Receive SUI</h2>
+                    <p style="color:#ffffff;">
+                        Use the Send tab to transfer SUI to another address and the Receive tab to show your QR code
+                        and wallet address for incoming transactions.
+                    </p>
+                </div>
+                <div class="tutorial-slide" data-index="2">
+                    <h2 style="color:#ffffff;">Slide 3 – Choose Contract Type</h2>
+                    <p style="color:#ffffff;">
+                        Tap "Create Contract" and select the contract type that best matches your use case:
+                        Fund Raiser, Escrow, Trade, Exchange or Rewards.
+                    </p>
+                </div>
+                <div class="tutorial-slide" data-index="3">
+                    <h2 style="color:#ffffff;">Slide 4 – Configure Parameters</h2>
+                    <p style="color:#ffffff;">
+                        Fill in the required parameters like receiver, goal, time limit or triggers.
+                        Double-check all values before deploying.
+                    </p>
+                </div>
+                <div class="tutorial-slide" data-index="4">
+                    <h2 style="color:#ffffff;">Slide 5 – Deploy & Track</h2>
+                    <p style="color:#ffffff;">
+                        Deploy your contract and wait for the success animation. Future versions will
+                        let you track and manage all your deployed contracts from one place.
+                    </p>
+                </div>
+            </div>
+            <div class="tutorial-controls" style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+                <button id="tutorial-prev">Previous</button>
+                <div class="tutorial-dots">
+                    <span class="tutorial-dot" data-index="0">•</span>
+                    <span class="tutorial-dot" data-index="1">•</span>
+                    <span class="tutorial-dot" data-index="2">•</span>
+                    <span class="tutorial-dot" data-index="3">•</span>
+                    <span class="tutorial-dot" data-index="4">•</span>
+                </div>
+                <button id="tutorial-next">Next</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toggle Menu -->
+    <div class="toggle-menu" id="toggle-menu">
+        <div class="menu-header">
+            <i class="fas fa-times close-menu" id="close-menu"></i>
+        </div>
+        <div class="menu-user">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-name" id="menu-username">Username</div>
+        </div>
+
+        <!-- Wallet row with address + copy button -->
+        <div class="wallet-heading">Wallet</div>
+        <div class="settings-row wallet-row" id="wallet-row">
+            <div class="wallet-row-main">
+                <i class="fas fa-wallet settings-icon"></i>
+                <span id="menu-wallet-address">0x0000...0000</span>
+            </div>
+            <button class="wallet-copy-btn" id="menu-copy-wallet" type="button">
+                <i class="fas fa-copy"></i>
+            </button>
+        </div>
+
+        <div class="settings-heading">Settings</div>
+
+        <div class="settings-row" id="account-row">
+            <div><i class="fas fa-user settings-icon"></i>
+            <span>Account</span></div>
+            <i class="fas fa-chevron-right chevron-icon"></i>
+        </div>
+        <div class="settings-row" id="security-row">
+            <div><i class="fas fa-shield-alt settings-icon"></i>
+            <span>Security</span></div>
+            <i class="fas fa-chevron-right chevron-icon"></i>
+        </div>
+        <div class="settings-row" id="limits-row">
+            <div><i class="fas fa-sliders-h settings-icon"></i>
+            <span>Limits</span></div>
+            <i class="fas fa-chevron-right chevron-icon"></i>
+        </div>
+        <div class="settings-row" id="faq-row">
+            <div><i class="fas fa-comments settings-icon"></i>
+            <span>FAQ</span></div>
+            <i class="fas fa-chevron-right chevron-icon"></i>
+        </div>
+        <div class="settings-row" id="help-center-row">
+            <div><i class='far fa-question-circle settings-icon'></i>
+            <span>Help Center</span></div>
+            <i class="fas fa-chevron-right chevron-icon"></i>
+        </div>
+        <div class="settings-row" id="logout-row">
+            <div><i class='fas fa-sign-out-alt settings-icon'></i>
+            <span>Log Out</span></div>
+            <i class="fas fa-chevron-right chevron-icon"></i>
+        </div>
+    </div>
+    
+    <!-- Welcome Popup -->
+    <div class="welcome-popup" id="welcome-popup">
+        <div class="popup-content">
+            <i class="fas fa-times close-popup" id="close-popup"></i>
+            <div class="popup-heading" style="font-weight:600; color:#3c59fa;">Glad to have you join us!</div>
+            <div class="popup-subheading" style="font-weight:500; color:#ffffff;">Let's start the journey to you first<br>smart contract on the Sui blockchain.</div>
+            <div class="check-animation">
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="35" stroke="#3c59fa" stroke-width="3" fill="none" id="check-circle"/>
+                    <path d="M25,40 L35,50 L55,30" stroke="#3c59fa" stroke-width="3" fill="none" id="check-mark" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Transaction Status Popup -->
+    <div class="transaction-popup" id="transaction-popup">
+        <div class="transaction-popup-content">
+            <div class="transaction-message" id="transaction-message"></div>
+            <div class="transaction-animation">
+                <svg width="80" height="80" viewBox="0 0 80 80" id="transaction-svg">
+                    <!-- Animation will be added dynamically -->
+                </svg>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Copy Success Popup -->
+    <div class="copy-popup" id="copy-popup">
+        <div class="copy-popup-content">
+            <div class="copy-message">Wallet Address Coppied Successfully</div>
+            <div class="copy-success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contract Deployment Popup -->
+    <div class="contract-deployment-popup" id="contract-deployment-popup">
+        <div class="contract-deployment-popup-content">
+            <div class="contract-deployment-message" id="contract-deployment-message"></div>
+            <div class="contract-deployment-animation">
+                <svg width="80" height="80" viewBox="0 0 80 80" id="contract-deployment-svg">
+                    <!-- Animation will be added dynamically -->
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Global variables
+    let currentUser = null;
+    let balanceInUSD = true;
+    let suiToUSDRate = 1.5; // will be updated in real-time by API
+
+    // DOM Elements
+    const menuToggle = document.getElementById('menu-toggle');
+    const toggleMenu = document.getElementById('toggle-menu');
+    const closeMenu = document.getElementById('close-menu');
+    const balanceDisplay = document.getElementById('balance-display');
+    const balanceAmount = document.getElementById('balance-amount');
+    const balanceChevron = document.getElementById('balance-chevron');
+    const balanceOptions = document.getElementById('balance-options');
+    const suiBalanceOption = document.getElementById('sui-balance-option');
+    const welcomePopup = document.getElementById('welcome-popup');
+    const closePopup = document.getElementById('close-popup');
+    const menuUsername = document.getElementById('menu-username');
+
+    // Wallet row in toggle menu
+    const walletRow = document.getElementById('wallet-row');
+    const menuWalletAddress = document.getElementById('menu-wallet-address');
+    const menuCopyWallet = document.getElementById('menu-copy-wallet');
+
+    // Page elements
+    const homePage = document.getElementById('home-page');
+    const sendPage = document.getElementById('send-page');
+    const receivePage = document.getElementById('receive-page');
+    const createContractPage = document.getElementById('create-contract-page');
+    const fundraiserPage = document.getElementById('fundraiser-page');
+    const escrowPage = document.getElementById('escrow-page');
+    const accountPage = document.getElementById('account-page');
+    const securityPage = document.getElementById('security-page');
+    const limitsPage = document.getElementById('limits-page');
+    const faqPage = document.getElementById('faq-page');
+    const helpCenterPage = document.getElementById('help-center-page');
+    const tutorialPage = document.getElementById('tutorial-page');
+
+    // Transaction popup elements
+    const transactionPopup = document.getElementById('transaction-popup');
+    const transactionMessage = document.getElementById('transaction-message');
+    const transactionSvg = document.getElementById('transaction-svg');
+
+    // Contract deployment popup elements
+    const contractDeploymentPopup = document.getElementById('contract-deployment-popup');
+    const contractDeploymentMessage = document.getElementById('contract-deployment-message');
+    const contractDeploymentSvg = document.getElementById('contract-deployment-svg');
+
+    // Copy popup element
+    const copyPopup = document.getElementById('copy-popup');
+
+    // Settings rows (others)
+    const accountRow = document.getElementById('account-row');
+    const securityRow = document.getElementById('security-row');
+    const limitsRow = document.getElementById('limits-row');
+    const faqRow = document.getElementById('faq-row');
+    const helpCenterRow = document.getElementById('help-center-row');
+    const logoutRow = document.getElementById('logout-row');
+
+    // Explore blocks
+    const suiCommunityBlock = document.getElementById('sui-community');
+    const suiDevCommunityBlock = document.getElementById('sui-dev-community');
+    const web3CommentsBlock = document.getElementById('web3-comments');
+
+    // Tutorial heading (moved into Create Contract page)
+    const tutorialHeading = document.getElementById('tutorial-heading');
+
+    // Account & limits controls
+    const accountDisplayNameInput = document.getElementById('account-display-name');
+    const accountEmailInput = document.getElementById('account-email');
+    const togglePasswordChangeBtn = document.getElementById('toggle-password-change');
+    const passwordChangeFields = document.getElementById('password-change-fields');
+    const accountOldPasswordInput = document.getElementById('account-old-password');
+    const accountNewPasswordInput = document.getElementById('account-new-password');
+    const accountSaveButton = document.getElementById('account-save-button');
+
+    const dailyLimitInput = document.getElementById('daily-limit-input');
+    const singleTxLimitInput = document.getElementById('single-tx-limit-input');
+    const limitsUpdateButton = document.getElementById('limits-update-button');
+    const accountTimeLimitInput = document.getElementById('account-time-limit');
+
+    // Send page controls
+    const sendAmountInput = document.getElementById('send-amount');
+    const receiverAddressInput = document.getElementById('receiver-address');
+    const sendAmountError = document.getElementById('send-amount-error');
+    const sendTxButton = document.getElementById('send-transaction-button');
+
+    // ---------- HELPER: hide all pages ----------
+    function hideAllPages() {
+        homePage.style.display = 'none';
+        sendPage.style.display = 'none';
+        receivePage.style.display = 'none';
+        createContractPage.style.display = 'none';
+        fundraiserPage.style.display = 'none';
+        escrowPage.style.display = 'none';
+        accountPage.style.display = 'none';
+        securityPage.style.display = 'none';
+        limitsPage.style.display = 'none';
+        faqPage.style.display = 'none';
+        helpCenterPage.style.display = 'none';
+        tutorialPage.style.display = 'none';
+    }
+
+    // Helper: generate a valid 32-byte Sui address in hex (0x + 64 hex chars)
+    function generateRandomSuiAddress() {
+        const bytes = new Uint8Array(32);
+        if (window.crypto && window.crypto.getRandomValues) {
+            window.crypto.getRandomValues(bytes);
+        } else {
+            // Very rare fallback
+            for (let i = 0; i < bytes.length; i++) {
+                bytes[i] = Math.floor(Math.random() * 256);
+            }
+        }
+        let hex = '';
+        bytes.forEach(b => {
+            hex += b.toString(16).padStart(2, '0');
+        });
+        return '0x' + hex;
+    }
+
+    function truncateAddress(addr) {
+        if (!addr || addr.length <= 12) return addr || '';
+        return addr.slice(0, 10) + '...' + addr.slice(-6);
+    }
+
+    function updateWalletRow() {
+        if (!currentUser || !currentUser.walletAddress) return;
+        if (menuWalletAddress) {
+            menuWalletAddress.textContent = truncateAddress(currentUser.walletAddress);
+        }
+    }
+
+    // ---------- SUI → USDT PRICE (real-time via CoinGecko) ----------
+    async function fetchSuiPrice() {
+        try {
+            const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=sui&vs_currencies=usd', {
+                cache: 'no-cache'
+            });
+            if (!response.ok) return;
+            const data = await response.json();
+            if (data && data.sui && typeof data.sui.usd === 'number') {
+                suiToUSDRate = data.sui.usd;
+                updateBalanceDisplay();
+            }
+        } catch (e) {
+            console.error('Failed to fetch SUI price:', e);
+        }
+    }
+
+    // ---------- ON-CHAIN BALANCE (Sui testnet) ----------
+    async function loadOnChainBalance() {
+        try {
+            if (!currentUser || !currentUser.walletAddress) return;
+
+            const rpcUrl = 'https://fullnode.testnet.sui.io:443';
+            const payload = {
+                jsonrpc: '2.0',
+                id: 1,
+                method: 'suix_getBalance',
+                params: [currentUser.walletAddress, '0x2::sui::SUI']
+            };
+
+            const response = await fetch(rpcUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                console.error('On-chain balance fetch failed:', response.status);
+                return;
+            }
+
+            const data = await response.json();
+            if (data.error) {
+                console.error('On-chain RPC error:', data.error);
+                return;
+            }
+
+            if (data && data.result && data.result.totalBalance != null) {
+                // totalBalance is in MIST (10^9 MIST = 1 SUI)
+                const mistBigInt = BigInt(data.result.totalBalance);
+                const suiAmount = Number(mistBigInt) / 1e9;
+
+                if (!Number.isNaN(suiAmount)) {
+                    currentUser.balance = suiAmount;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateBalanceDisplay();
+                    updateSendBalance();
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching on-chain SUI balance:', error);
+        }
+    }
+
+    // ---------- ACCOUNT DATA (wallet + balance + email + limits) FROM Accounts.json ----------
+    async function loadWalletAddress() {
+        try {
+            const response = await fetch('Accounts.json?_=' + Date.now(), { cache: 'no-cache' });
+            if (!response.ok) {
+                throw new Error('Failed to fetch Accounts.json');
+            }
+            const accounts = await response.json();
+
+            // Find the current user in Accounts.json
+            const userAccount = accounts.find(account => account.username === currentUser.username);
+
+            if (userAccount) {
+                // Core account info
+                if (userAccount.walletAddress) {
+                    currentUser.walletAddress = userAccount.walletAddress;
+                    document.getElementById('wallet-address-text').textContent = currentUser.walletAddress;
+                }
+
+                currentUser.email = userAccount.email || currentUser.email;
+                currentUser.dailySendLimit = userAccount.dailySendLimit;
+                currentUser.singleTxLimit = userAccount.singleTxLimit;
+                currentUser.timeLimitDate = userAccount.timeLimitDate || null;
+                currentUser.fundraiserTimeLimit = userAccount.fundraiserTimeLimit || null;
+
+                // Prefill Account tab
+                const accNameInput = document.getElementById('account-display-name');
+                if (accNameInput) accNameInput.value = userAccount.username;
+
+                const accEmailInput = document.getElementById('account-email');
+                if (accEmailInput) accEmailInput.value = userAccount.email || '';
+
+                // Prefill Limits tab
+                const dailyLimitEl = document.getElementById('daily-limit-input');
+                if (dailyLimitEl && typeof userAccount.dailySendLimit !== 'undefined') {
+                    dailyLimitEl.value = userAccount.dailySendLimit;
+                }
+
+                const singleTxLimitEl = document.getElementById('single-tx-limit-input');
+                if (singleTxLimitEl && typeof userAccount.singleTxLimit !== 'undefined') {
+                    singleTxLimitEl.value = userAccount.singleTxLimit;
+                }
+
+                if (accountTimeLimitInput && userAccount.timeLimitDate) {
+                    accountTimeLimitInput.value = userAccount.timeLimitDate;
+                }
+
+                if (currentUser.fundraiserTimeLimit && document.getElementById('fundraiser-time')) {
+                    document.getElementById('fundraiser-time').value = currentUser.fundraiserTimeLimit;
+                }
+
+                // Balance from Accounts.json (fallback only)
+                if (
+                    currentUser.balance === undefined ||
+                    currentUser.balance === null ||
+                    isNaN(currentUser.balance)
+                ) {
+                    if (typeof userAccount.balance === 'number') {
+                        currentUser.balance = userAccount.balance;
+                    } else {
+                        currentUser.balance = 0;
+                    }
+                }
+
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            } else {
+                // Fallback: user not found in Accounts.json
+                if (!currentUser.walletAddress) {
+                    currentUser.walletAddress = generateRandomSuiAddress();
+                }
+                if (
+                    currentUser.balance === undefined ||
+                    currentUser.balance === null ||
+                    isNaN(currentUser.balance)
+                ) {
+                    currentUser.balance = 0;
+                }
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                document.getElementById('wallet-address-text').textContent = currentUser.walletAddress;
+            }
+        } catch (error) {
+            console.error('Error loading wallet address:', error);
+            // Fallback: generate wallet address + default balance if Accounts.json not available
+            if (!currentUser.walletAddress) {
+                currentUser.walletAddress = generateRandomSuiAddress();
+            }
+            if (
+                currentUser.balance === undefined ||
+                currentUser.balance === null ||
+                isNaN(currentUser.balance)
+            ) {
+                currentUser.balance = 0;
+            }
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            document.getElementById('wallet-address-text').textContent = currentUser.walletAddress;
+        }
+
+        // Override with on-chain testnet SUI balance (source of truth)
+        await loadOnChainBalance();
+
+        // After loading wallet + (optionally) on-chain balance, sync UI + QR
+        updateBalanceDisplay();
+        updateSendBalance();
+        updateWalletRow();
+        generateQRCode();
+    }
+
+    function updateUserInfo() {
+        if (currentUser) {
+            menuUsername.textContent = currentUser.username;
+            if (currentUser.walletAddress) {
+                document.getElementById('wallet-address-text').textContent = currentUser.walletAddress;
+                updateWalletRow();
+            }
+        }
+    }
+
+    function updateBalanceDisplay() {
+        if (!currentUser) return;
+
+        const suiBalance = (typeof currentUser.balance === 'number')
+            ? currentUser.balance
+            : parseFloat(currentUser.balance) || 0;
+
+        if (balanceInUSD) {
+            balanceAmount.textContent = `$${(suiBalance * suiToUSDRate).toFixed(2)}`;
+        } else {
+            balanceAmount.textContent = `${suiBalance} SUI`;
+        }
+
+        // Update dropdown SUI option
+        const suiOptionBalance = document.querySelector('#sui-balance-option .balance-amount');
+        if (suiOptionBalance) {
+            if (balanceInUSD) {
+                suiOptionBalance.textContent = `${suiBalance} SUI`;
+            } else {
+                suiOptionBalance.textContent = `$${(suiBalance * suiToUSDRate).toFixed(2)}`;
+            }
+        }
+    }
+
+    function updateSendBalance() {
+        if (!currentUser) return;
+
+        const amount = parseFloat(sendAmountInput.value) || 0;
+        const handlingFee = 0.001; // placeholder; real fee should come from backend/chain
+        const actualAmount = amount;
+
+        const suiBalance = (typeof currentUser.balance === 'number')
+            ? currentUser.balance
+            : parseFloat(currentUser.balance) || 0;
+
+        document.getElementById('total-balance').textContent = `${suiBalance} SUI`;
+        document.getElementById('actual-amount').textContent = `${actualAmount} SUI`;
+        document.getElementById('handling-fee').textContent = `${handlingFee} SUI`;
+    }
+
+    function generateQRCode() {
+        const walletTextEl = document.getElementById('wallet-address-text');
+        const canvas = document.getElementById('qr-code');
+        if (!walletTextEl || !canvas) return;
+
+        const walletAddress =
+            (currentUser && currentUser.walletAddress)
+                ? currentUser.walletAddress
+                : walletTextEl.textContent;
+
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        QRCode.toCanvas(
+            canvas,
+            walletAddress,
+            {
+                width: 200,
+                margin: 1,
+                color: {
+                    dark: '#000000',
+                    light: '#FFFFFF'
+                }
+            },
+            function (error) {
+                if (error) {
+                    console.error('Error generating QR code:', error);
+                }
+            }
+        );
+    }
+
+    function showContractDeploymentPopup(success) {
+        contractDeploymentMessage.textContent = success
+            ? 'Contract Deployed Successfully'
+            : 'Contract Deployment Failed';
+
+        // Clear previous SVG content
+        contractDeploymentSvg.innerHTML = '';
+
+        if (success) {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', '40');
+            circle.setAttribute('cy', '40');
+            circle.setAttribute('r', '35');
+            circle.setAttribute('stroke', '#3c59fa');
+            circle.setAttribute('stroke-width', '3');
+            circle.setAttribute('fill', 'none');
+            circle.setAttribute('id', 'contract-deployment-circle');
+
+            const check = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            check.setAttribute('d', 'M25,40 L35,50 L55,30');
+            check.setAttribute('stroke', '#3c59fa');
+            check.setAttribute('stroke-width', '3');
+            check.setAttribute('fill', 'none');
+            check.setAttribute('id', 'contract-deployment-check');
+            check.setAttribute('stroke-linecap', 'round');
+            check.setAttribute('stroke-linejoin', 'round');
+
+            contractDeploymentSvg.appendChild(circle);
+            contractDeploymentSvg.appendChild(check);
+
+            setTimeout(() => {
+                circle.style.transition = 'stroke-dashoffset 0.8s ease-in-out';
+                circle.style.strokeDasharray = '219.91';
+                circle.style.strokeDashoffset = '0';
+
+                setTimeout(() => {
+                    check.style.transition = 'stroke-dashoffset 0.5s ease-in-out';
+                    check.style.strokeDasharray = '50';
+                    check.style.strokeDashoffset = '0';
+                }, 800);
+            }, 300);
+        } else {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', '40');
+            circle.setAttribute('cy', '40');
+            circle.setAttribute('r', '35');
+            circle.setAttribute('stroke', '#ff0000');
+            circle.setAttribute('stroke-width', '3');
+            circle.setAttribute('fill', 'none');
+            circle.setAttribute('id', 'contract-deployment-circle');
+
+            const x1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            x1.setAttribute('x1', '25');
+            x1.setAttribute('y1', '25');
+            x1.setAttribute('x2', '55');
+            x1.setAttribute('y2', '55');
+            x1.setAttribute('stroke', '#ff0000');
+            x1.setAttribute('stroke-width', '3');
+            x1.setAttribute('id', 'contract-deployment-x1');
+            x1.setAttribute('stroke-linecap', 'round');
+
+            const x2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            x2.setAttribute('x1', '55');
+            x2.setAttribute('y1', '25');
+            x2.setAttribute('x2', '25');
+            x2.setAttribute('y2', '55');
+            x2.setAttribute('stroke', '#ff0000');
+            x2.setAttribute('stroke-width', '3');
+            x2.setAttribute('id', 'contract-deployment-x2');
+            x2.setAttribute('stroke-linecap', 'round');
+
+            contractDeploymentSvg.appendChild(circle);
+            contractDeploymentSvg.appendChild(x1);
+            contractDeploymentSvg.appendChild(x2);
+
+            setTimeout(() => {
+                circle.style.transition = 'stroke-dashoffset 0.8s ease-in-out';
+                circle.style.strokeDasharray = '219.91';
+                circle.style.strokeDashoffset = '0';
+
+                setTimeout(() => {
+                    x1.style.transition = 'stroke-dashoffset 0.5s ease-in-out';
+                    x1.style.strokeDasharray = '42.43';
+                    x1.style.strokeDashoffset = '0';
+                    x2.style.transition = 'stroke-dashoffset 0.5s ease-in-out';
+                    x2.style.strokeDasharray = '42.43';
+                    x2.style.strokeDashoffset = '0';
+                }, 800);
+            }, 300);
+        }
+
+        contractDeploymentPopup.style.display = 'flex';
+
+        setTimeout(() => {
+            contractDeploymentPopup.style.display = 'none';
+        }, 2000);
+    }
+
+    // Tutorial slider helpers
+    function showTutorialSlide(index) {
+        const slides = tutorialPage.querySelectorAll('.tutorial-slide');
+        const dots = tutorialPage.querySelectorAll('.tutorial-dot');
+        const total = slides.length;
+        let newIndex = index;
+
+        if (newIndex < 0) newIndex = total - 1;
+        if (newIndex >= total) newIndex = 0;
+
+        slides.forEach((slide, i) => {
+            slide.style.display = (i === newIndex) ? 'block' : 'none';
+        });
+        dots.forEach((dot, i) => {
+            dot.style.opacity = (i === newIndex) ? '1' : '0.4';
+        });
+
+        tutorialPage.dataset.currentIndex = newIndex;
+    }
+
+    // Helper: send account update payload to save_account.php
+    async function sendAccountUpdate(updatePayload) {
+        try {
+            const response = await fetch('save_account.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatePayload)
+            });
+            const data = await response.json();
+            if (!data.success) {
+                alert(data.message || 'Failed to update account');
+                return null;
+            }
+
+            if (data.account) {
+                const acc = data.account;
+                if (!currentUser) currentUser = {};
+                currentUser.username = acc.username;
+                currentUser.email = acc.email;
+                currentUser.walletAddress = acc.walletAddress;
+                currentUser.dailySendLimit = acc.dailySendLimit;
+                currentUser.singleTxLimit = acc.singleTxLimit;
+                currentUser.timeLimitDate = acc.timeLimitDate || currentUser.timeLimitDate;
+                currentUser.fundraiserTimeLimit = acc.fundraiserTimeLimit || currentUser.fundraiserTimeLimit;
+
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateUserInfo();
+
+                // Reflect new username/email/limits/timeLimit in UI
+                if (accountDisplayNameInput) accountDisplayNameInput.value = acc.username;
+                if (accountEmailInput) accountEmailInput.value = acc.email;
+                if (dailyLimitInput && typeof acc.dailySendLimit !== 'undefined') {
+                    dailyLimitInput.value = acc.dailySendLimit;
+                }
+                if (singleTxLimitInput && typeof acc.singleTxLimit !== 'undefined') {
+                    singleTxLimitInput.value = acc.singleTxLimit;
+                }
+                if (accountTimeLimitInput && acc.timeLimitDate) {
+                    accountTimeLimitInput.value = acc.timeLimitDate;
+                }
+                if (document.getElementById('fundraiser-time') && acc.fundraiserTimeLimit) {
+                    document.getElementById('fundraiser-time').value = acc.fundraiserTimeLimit;
+                }
+            }
+
+            if (data.message) {
+                alert(data.message);
+            } else {
+                alert('Account updated successfully');
+            }
+            return data;
+        } catch (err) {
+            console.error('Error updating account:', err);
+            alert('Error updating account');
+            return null;
+        }
+    }
+
+    // --------- REAL SEND: front-end hook to backend send_sui.php ----------
+    async function sendSuiTransaction(amountSui, receiverAddress) {
+        if (!currentUser || !currentUser.walletAddress) {
+            showTransactionPopup(false, 'Wallet not loaded');
+            return;
+        }
+
+        try {
+            const response = await fetch('send_sui.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fromAddress: currentUser.walletAddress,
+                    toAddress: receiverAddress,
+                    amountSui: amountSui
+                })
+            });
+
+            const data = await response.json();
+            if (!data.success) {
+                showTransactionPopup(false, data.message || 'Transaction failed');
+                return;
+            }
+
+            // If backend returns real gas usage and new balance, reflect it
+            if (typeof data.gasUsedSui === 'number') {
+                document.getElementById('handling-fee').textContent = data.gasUsedSui + ' SUI';
+            }
+
+            // Force on-chain resync
+            await loadOnChainBalance();
+
+            showTransactionPopup(true, 'Transaction Completed Successfully');
+
+            // Clear form
+            sendAmountInput.value = '';
+            receiverAddressInput.value = '';
+            updateSendBalance();
+        } catch (e) {
+            console.error('Error sending transaction:', e);
+            showTransactionPopup(false, 'Network or server error');
+        }
+    }
+
+    function showTransactionPopup(success, customMessage) {
+        transactionMessage.textContent = customMessage
+            ? customMessage
+            : success
+                ? 'Transaction Completed Successfully'
+                : 'Transaction Failed';
+
+        // Clear previous SVG content
+        transactionSvg.innerHTML = '';
+
+        if (success) {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', '40');
+            circle.setAttribute('cy', '40');
+            circle.setAttribute('r', '35');
+            circle.setAttribute('stroke', '#3c59fa');
+            circle.setAttribute('stroke-width', '3');
+            circle.setAttribute('fill', 'none');
+            circle.setAttribute('id', 'transaction-circle');
+
+            const check = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            check.setAttribute('d', 'M25,40 L35,50 L55,30');
+            check.setAttribute('stroke', '#3c59fa');
+            check.setAttribute('stroke-width', '3');
+            check.setAttribute('fill', 'none');
+            check.setAttribute('id', 'transaction-check');
+            check.setAttribute('stroke-linecap', 'round');
+            check.setAttribute('stroke-linejoin', 'round');
+
+            transactionSvg.appendChild(circle);
+            transactionSvg.appendChild(check);
+
+            setTimeout(() => {
+                circle.style.transition = 'stroke-dashoffset 0.8s ease-in-out';
+                circle.style.strokeDasharray = '219.91';
+                circle.style.strokeDashoffset = '0';
+
+                setTimeout(() => {
+                    check.style.transition = 'stroke-dashoffset 0.5s ease-in-out';
+                    check.style.strokeDasharray = '50';
+                    check.style.strokeDashoffset = '0';
+                }, 800);
+            }, 300);
+        } else {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', '40');
+            circle.setAttribute('cy', '40');
+            circle.setAttribute('r', '35');
+            circle.setAttribute('stroke', '#ff0000');
+            circle.setAttribute('stroke-width', '3');
+            circle.setAttribute('fill', 'none');
+            circle.setAttribute('id', 'transaction-circle');
+
+            const x1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            x1.setAttribute('x1', '25');
+            x1.setAttribute('y1', '25');
+            x1.setAttribute('x2', '55');
+            x1.setAttribute('y2', '55');
+            x1.setAttribute('stroke', '#ff0000');
+            x1.setAttribute('stroke-width', '3');
+            x1.setAttribute('id', 'transaction-x1');
+            x1.setAttribute('stroke-linecap', 'round');
+
+            const x2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            x2.setAttribute('x1', '55');
+            x2.setAttribute('y1', '25');
+            x2.setAttribute('x2', '25');
+            x2.setAttribute('y2', '55');
+            x2.setAttribute('stroke', '#ff0000');
+            x2.setAttribute('stroke-width', '3');
+            x2.setAttribute('id', 'transaction-x2');
+            x2.setAttribute('stroke-linecap', 'round');
+
+            transactionSvg.appendChild(circle);
+            transactionSvg.appendChild(x1);
+            transactionSvg.appendChild(x2);
+
+            setTimeout(() => {
+                circle.style.transition = 'stroke-dashoffset 0.8s ease-in-out';
+                circle.style.strokeDasharray = '219.91';
+                circle.style.strokeDashoffset = '0';
+
+                setTimeout(() => {
+                    x1.style.transition = 'stroke-dashoffset 0.5s ease-in-out';
+                    x1.style.strokeDasharray = '42.43';
+                    x1.style.strokeDashoffset = '0';
+                    x2.style.transition = 'stroke-dashoffset 0.5s ease-in-out';
+                    x2.style.strokeDasharray = '42.43';
+                    x2.style.strokeDashoffset = '0';
+                }, 800);
+            }, 300);
+        }
+
+        transactionPopup.style.display = 'flex';
+
+        setTimeout(() => {
+            transactionPopup.style.display = 'none';
+        }, 2000);
+    }
+
+    function animateCheck() {
+        const circle = document.getElementById('check-circle');
+        const check = document.getElementById('check-mark');
+
+        // Reset
+        circle.style.strokeDasharray = '219.91';
+        circle.style.strokeDashoffset = '219.91';
+        check.style.strokeDasharray = '50';
+        check.style.strokeDashoffset = '50';
+
+        // Animate circle
+        setTimeout(() => {
+            circle.style.transition = 'stroke-dashoffset 0.8s ease-in-out';
+            circle.style.strokeDashoffset = '0';
+
+            // Animate check after circle completes
+            setTimeout(() => {
+                check.style.transition = 'stroke-dashoffset 0.5s ease-in-out';
+                check.style.strokeDashoffset = '0';
+            }, 800);
+        }, 300);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Check if user is logged in
+        const savedUser = localStorage.getItem('currentUser');
+        if (savedUser) {
+            currentUser = JSON.parse(savedUser);
+
+            updateUserInfo();
+
+            // Show welcome popup only on first visit per USER
+            const visitKey = currentUser && currentUser.username
+                ? 'hasVisited_' + currentUser.username
+                : 'hasVisited_global';
+
+            const hasVisited = localStorage.getItem(visitKey);
+
+            if (!hasVisited) {
+                setTimeout(() => {
+                    welcomePopup.style.display = 'flex';
+                    animateCheck();
+                    localStorage.setItem(visitKey, 'true');
+                }, 500);
+            }
+
+            // Load wallet address + balance (Accounts.json + on-chain override)
+            loadWalletAddress();
+        } else {
+            // Redirect to login if not logged in
+            window.location.href = 'Login.html';
+            return;
+        }
+
+        // Ensure only home is visible on load
+        hideAllPages();
+        homePage.style.display = 'block';
+
+        // Start periodic on-chain balance refresh for real-time accuracy
+        setInterval(loadOnChainBalance, 30000);
+        // Start periodic SUI price refresh
+        fetchSuiPrice();
+        setInterval(fetchSuiPrice, 30000);
+
+        // --------- HOMEPAGE EVENTS ----------
+        menuToggle.addEventListener('click', function () {
+            toggleMenu.classList.add('active');
+        });
+
+        closeMenu.addEventListener('click', function () {
+            toggleMenu.classList.remove('active');
+        });
+
+        balanceDisplay.addEventListener('click', function () {
+            balanceOptions.style.display =
+                balanceOptions.style.display === 'block' ? 'none' : 'block';
+            balanceChevron.classList.toggle('fa-chevron-down');
+            balanceChevron.classList.toggle('fa-chevron-up');
+
+            if (balanceOptions.style.display === 'block') {
+                balanceDisplay.parentElement.style.backgroundColor = '#ffffff';
+                balanceAmount.style.color = '#070707';
+                balanceChevron.style.color = '#070707';
+            } else {
+                balanceDisplay.parentElement.style.backgroundColor = '#070707';
+                balanceAmount.style.color = '#ffffff';
+                balanceChevron.style.color = '#ffffff';
+            }
+        });
+
+        suiBalanceOption.addEventListener('click', function () {
+            balanceInUSD = !balanceInUSD;
+            updateBalanceDisplay();
+            balanceDisplay.click(); // Close dropdown
+        });
+
+        closePopup.addEventListener('click', function () {
+            welcomePopup.style.display = 'none';
+        });
+
+        // Copy from wallet row in menu
+        if (menuCopyWallet) {
+            menuCopyWallet.addEventListener('click', function () {
+                if (!currentUser || !currentUser.walletAddress) return;
+                navigator.clipboard.writeText(currentUser.walletAddress).then(function () {
+                    copyPopup.style.display = 'flex';
+                    setTimeout(function () {
+                        copyPopup.style.display = 'none';
+                    }, 2000);
+                });
+            });
+        }
+
+        // --------- TAB NAVIGATION ----------
+        document.getElementById('send-button').addEventListener('click', function () {
+            hideAllPages();
+            sendPage.style.display = 'block';
+            loadOnChainBalance().then(() => {
+                updateSendBalance();
+            });
+        });
+
+        document.getElementById('receive-button').addEventListener('click', function () {
+            hideAllPages();
+            receivePage.style.display = 'block';
+            // Make sure QR is up-to-date when opening Receive
+            generateQRCode();
+        });
+
+        document.getElementById('create-contract-button').addEventListener('click', function () {
+            hideAllPages();
+            createContractPage.style.display = 'block';
+        });
+
+        // Tutorial heading -> tutorial tab (moved from homepage)
+        if (tutorialHeading) {
+            tutorialHeading.addEventListener('click', function () {
+                hideAllPages();
+                tutorialPage.style.display = 'block';
+                showTutorialSlide(0);
+            });
+        }
+
+        // Contract type selection
+        document.getElementById('fundraiser-option').addEventListener('click', function () {
+            hideAllPages();
+            fundraiserPage.style.display = 'block';
+        });
+
+        document.getElementById('escrow-option').addEventListener('click', function () {
+            hideAllPages();
+            escrowPage.style.display = 'block';
+        });
+
+        // Back buttons
+        document.getElementById('send-back-button').addEventListener('click', function () {
+            hideAllPages();
+            homePage.style.display = 'block';
+        });
+
+        document.getElementById('receive-back-button').addEventListener('click', function () {
+            hideAllPages();
+            homePage.style.display = 'block';
+        });
+
+        document.getElementById('contract-close-button').addEventListener('click', function () {
+            hideAllPages();
+            homePage.style.display = 'block';
+        });
+
+        document.getElementById('fundraiser-back-button').addEventListener('click', function () {
+            hideAllPages();
+            createContractPage.style.display = 'block';
+        });
+
+        document.getElementById('fundraiser-close-button').addEventListener('click', function () {
+            hideAllPages();
+            homePage.style.display = 'block';
+        });
+
+        document.getElementById('escrow-back-button').addEventListener('click', function () {
+            hideAllPages();
+            createContractPage.style.display = 'block';
+        });
+
+        document.getElementById('escrow-close-button').addEventListener('click', function () {
+            hideAllPages();
+            homePage.style.display = 'block';
+        });
+
+        // Back buttons for new pages
+        document.getElementById('account-back-button').addEventListener('click', function () {
+            hideAllPages();
+            homePage.style.display = 'block';
+        });
+
+        document.getElementById('security-back-button').addEventListener('click', function () {
+            hideAllPages();
+            homePage.style.display = 'block';
+        });
+
+        document.getElementById('limits-back-button').addEventListener('click', function () {
+            hideAllPages();
+            homePage.style.display = 'block';
+        });
+
+        document.getElementById('faq-back-button').addEventListener('click', function () {
+            hideAllPages();
+            homePage.style.display = 'block';
+        });
+
+        document.getElementById('help-center-back-button').addEventListener('click', function () {
+            hideAllPages();
+            homePage.style.display = 'block';
+        });
+
+        document.getElementById('tutorial-back-button').addEventListener('click', function () {
+            hideAllPages();
+            homePage.style.display = 'block';
+        });
+
+        // --------- SEND TRANSACTION ----------
+        sendTxButton.addEventListener('click', function () {
+            if (!currentUser) {
+                alert('User not loaded');
+                return;
+            }
+
+            const amount = parseFloat(sendAmountInput.value);
+            const receiver = receiverAddressInput.value.trim();
+
+            sendAmountError.textContent = '';
+
+            if (!amount || amount <= 0 || !receiver) {
+                sendAmountError.textContent = 'Please enter a valid amount and receiver address.';
+                return;
+            }
+
+            // simple validation of hex address
+            if (!/^0x[0-9a-fA-F]{40,}$/.test(receiver)) {
+                sendAmountError.textContent = 'Please enter a valid Sui address.';
+                return;
+            }
+
+            const handlingFee = 0.001; // placeholder fee before backend/real gas calculation
+            const totalAmount = amount + handlingFee;
+
+            const suiBalance = (typeof currentUser.balance === 'number')
+                ? currentUser.balance
+                : parseFloat(currentUser.balance) || 0;
+
+            if (totalAmount > suiBalance) {
+                sendAmountError.textContent = 'Insufficient balance: amount + fee exceeds your balance.';
+                showTransactionPopup(false, 'Insufficient balance');
+                return;
+            }
+
+            // Optional: enforce per-account limits if set
+            if (typeof currentUser.singleTxLimit === 'number' && amount > currentUser.singleTxLimit) {
+                sendAmountError.textContent = 'Amount exceeds your single transaction limit.';
+                return;
+            }
+
+            if (typeof currentUser.dailySendLimit === 'number') {
+                // For a true daily limit you’d need to track today’s volume server-side.
+                // Here we only validate per-tx on front-end.
+            }
+
+            // At this point we call backend to do a REAL Sui send (send_sui.php)
+            sendSuiTransaction(amount, receiver);
+        });
+
+        // --------- CONTRACT DEPLOYMENT ----------
+        document.getElementById('deploy-fundraiser-button').addEventListener('click', function () {
+            const receiver = document.getElementById('fundraiser-receiver').value;
+            const goal = document.getElementById('fundraiser-goal').value;
+            const timeLimit = document.getElementById('fundraiser-time').value;
+
+            if (!receiver || !goal || !timeLimit) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            // Simulate contract deployment - 80% success rate for demo
+            const success = Math.random() > 0.2;
+            showContractDeploymentPopup(success);
+
+            // Clear form
+            if (success) {
+                document.getElementById('fundraiser-receiver').value = '';
+                document.getElementById('fundraiser-goal').value = '';
+                document.getElementById('fundraiser-time').value = '';
+            }
+        });
+
+        document.getElementById('deploy-escrow-button').addEventListener('click', function () {
+            const receiver = document.getElementById('escrow-receiver').value;
+            const sender = document.getElementById('escrow-sender').value;
+            const amount = document.getElementById('escrow-amount').value;
+            const trigger = document.getElementById('escrow-trigger').value;
+
+            if (!receiver || !sender || !amount || !trigger) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            // Simulate contract deployment - 80% success rate for demo
+            const success = Math.random() > 0.2;
+            showContractDeploymentPopup(success);
+
+            // Clear form
+            if (success) {
+                document.getElementById('escrow-receiver').value = '';
+                document.getElementById('escrow-sender').value = '';
+                document.getElementById('escrow-amount').value = '';
+                document.getElementById('escrow-trigger').value = '';
+            }
+        });
+
+        // --------- COPY ADDRESS (Receive page) ----------
+        document.getElementById('copy-address-button').addEventListener('click', function () {
+            const walletAddress =
+                document.getElementById('wallet-address-text').textContent;
+            navigator.clipboard.writeText(walletAddress).then(function () {
+                copyPopup.style.display = 'flex';
+                setTimeout(function () {
+                    copyPopup.style.display = 'none';
+                }, 2000);
+            });
+        });
+
+        // --------- SEND AMOUNT INPUT ----------
+        sendAmountInput.addEventListener('input', function () {
+            sendAmountError.textContent = '';
+            updateSendBalance();
+        });
+
+        // --------- SETTINGS ROWS (internal tabs) ----------
+        accountRow.addEventListener('click', function () {
+            toggleMenu.classList.remove('active');
+            hideAllPages();
+            accountPage.style.display = 'block';
+        });
+
+        securityRow.addEventListener('click', function () {
+            toggleMenu.classList.remove('active');
+            hideAllPages();
+            securityPage.style.display = 'block';
+        });
+
+        limitsRow.addEventListener('click', function () {
+            toggleMenu.classList.remove('active');
+            hideAllPages();
+            limitsPage.style.display = 'block';
+        });
+
+        faqRow.addEventListener('click', function () {
+            toggleMenu.classList.remove('active');
+            hideAllPages();
+            faqPage.style.display = 'block';
+        });
+
+        helpCenterRow.addEventListener('click', function () {
+            toggleMenu.classList.remove('active');
+            hideAllPages();
+            helpCenterPage.style.display = 'block';
+        });
+
+        logoutRow.addEventListener('click', function () {
+            if (currentUser && currentUser.username) {
+                localStorage.setItem('lastUsername', currentUser.username);
+            }
+            localStorage.removeItem('currentUser');
+            window.location.href = 'Relogin.html';
+        });
+
+        // Help Center button to Sui Community
+        document.getElementById('help-center-sui-button').addEventListener('click', function () {
+            window.open('https://sui.io/', '_blank');
+        });
+
+        // --------- EXPLORE BLOCK LINKS ----------
+        suiCommunityBlock.addEventListener('click', function () {
+            window.open('https://sui.io/', '_blank');
+        });
+
+        suiDevCommunityBlock.addEventListener('click', function () {
+            window.open('https://sui.io/developers', '_blank');
+        });
+
+        web3CommentsBlock.addEventListener('click', function () {
+            // Using r/web3 as a general Web3 discussion hub
+            window.open('https://www.reddit.com/r/web3/', '_blank');
+        });
+
+        // --------- TUTORIAL SLIDER CONTROLS ----------
+        tutorialPage.dataset.currentIndex = 0;
+        showTutorialSlide(0);
+
+        const tutorialPrev = document.getElementById('tutorial-prev');
+        const tutorialNext = document.getElementById('tutorial-next');
+        const tutorialDots = tutorialPage.querySelectorAll('.tutorial-dot');
+
+        tutorialPrev.addEventListener('click', function () {
+            const current = parseInt(tutorialPage.dataset.currentIndex || '0', 10);
+            showTutorialSlide(current - 1);
+        });
+
+        tutorialNext.addEventListener('click', function () {
+            const current = parseInt(tutorialPage.dataset.currentIndex || '0', 10);
+            showTutorialSlide(current + 1);
+        });
+
+        tutorialDots.forEach(dot => {
+            dot.addEventListener('click', function () {
+                const index = parseInt(this.dataset.index, 10);
+                showTutorialSlide(index);
+            });
+        });
+
+        // --------- ACCOUNT PAGE LOGIC ----------
+        if (togglePasswordChangeBtn) {
+            togglePasswordChangeBtn.addEventListener('click', function () {
+                if (passwordChangeFields.style.display === 'none') {
+                    passwordChangeFields.style.display = 'block';
+                } else {
+                    passwordChangeFields.style.display = 'none';
+                    if (accountOldPasswordInput) accountOldPasswordInput.value = '';
+                    if (accountNewPasswordInput) accountNewPasswordInput.value = '';
+                }
+            });
+        }
+
+        if (accountSaveButton) {
+            accountSaveButton.addEventListener('click', async function () {
+                if (!currentUser || !currentUser.username) {
+                    alert('No current user loaded');
+                    return;
+                }
+
+                const newUsername = (accountDisplayNameInput && accountDisplayNameInput.value.trim())
+                    ? accountDisplayNameInput.value.trim()
+                    : currentUser.username;
+
+                const newEmail = (accountEmailInput && accountEmailInput.value.trim())
+                    ? accountEmailInput.value.trim()
+                    : currentUser.email;
+
+                const oldPassword = accountOldPasswordInput ? accountOldPasswordInput.value : '';
+                const newPassword = accountNewPasswordInput ? accountNewPasswordInput.value : '';
+
+                const payload = {
+                    action: 'update',
+                    username: currentUser.username,
+                    newUsername: newUsername,
+                    email: newEmail
+                };
+
+                // Only include password fields if user is actually trying to change password
+                if (passwordChangeFields && passwordChangeFields.style.display !== 'none') {
+                    if (!oldPassword || !newPassword) {
+                        alert('Please fill both Old password and New password');
+                        return;
+                    }
+                    payload.oldPassword = oldPassword;
+                    payload.newPassword = newPassword;
+                }
+
+                const result = await sendAccountUpdate(payload);
+                if (result && result.account) {
+                    // If username changed, keep currentUser in sync
+                    currentUser.username = result.account.username;
+                    currentUser.email = result.account.email;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateUserInfo();
+                    // Clean password fields
+                    if (accountOldPasswordInput) accountOldPasswordInput.value = '';
+                    if (accountNewPasswordInput) accountNewPasswordInput.value = '';
+                    if (passwordChangeFields) passwordChangeFields.style.display = 'none';
+                }
+            });
+        }
+
+        // --------- LIMITS PAGE LOGIC ----------
+        if (limitsUpdateButton) {
+            limitsUpdateButton.addEventListener('click', async function () {
+                if (!currentUser || !currentUser.username) {
+                    alert('No current user loaded');
+                    return;
+                }
+
+                const dailyLimitVal = dailyLimitInput && dailyLimitInput.value !== ''
+                    ? parseFloat(dailyLimitInput.value)
+                    : null;
+                const singleTxLimitVal = singleTxLimitInput && singleTxLimitInput.value !== ''
+                    ? parseFloat(singleTxLimitInput.value)
+                    : null;
+                const timeLimitDateVal = accountTimeLimitInput && accountTimeLimitInput.value !== ''
+                    ? accountTimeLimitInput.value
+                    : null;
+
+                const payload = {
+                    action: 'update',
+                    username: currentUser.username
+                };
+
+                if (dailyLimitVal !== null && !Number.isNaN(dailyLimitVal)) {
+                    payload.dailySendLimit = dailyLimitVal;
+                }
+                if (singleTxLimitVal !== null && !Number.isNaN(singleTxLimitVal)) {
+                    payload.singleTxLimit = singleTxLimitVal;
+                }
+                if (timeLimitDateVal) {
+                    payload.timeLimitDate = timeLimitDateVal;
+                }
+
+                await sendAccountUpdate(payload);
+            });
+        }
+
+        // --------- FLATPICKR INIT (Fundraiser + Limits global date) ----------
+        if (window.flatpickr) {
+            flatpickr('#fundraiser-time', {
+                dateFormat: 'Y-m-d',
+                minDate: 'today',
+                onChange: function(selectedDates, dateStr) {
+                    if (!currentUser || !currentUser.username) return;
+                    // Save to account in Accounts.json
+                    sendAccountUpdate({
+                        action: 'update',
+                        username: currentUser.username,
+                        fundraiserTimeLimit: dateStr
+                    });
+                }
+            });
+
+            flatpickr('#account-time-limit', {
+                dateFormat: 'Y-m-d',
+                minDate: 'today'
+            });
+        }
+
+        // Initial UI sync (in case currentUser already had values)
+        updateBalanceDisplay();
+        updateSendBalance();
+    });
+    </script>
+</body>
+</html>

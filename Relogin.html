@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartForge - Log In</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1 style="font-family: 'Montserrat', sans-serif; font-weight: 600; color: #3c59fa;">Welcome Back!</h1>
+            
+            <div class="menu-user" style="flex-direction: column; align-items: center; margin-bottom: 20px;">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-name" id="relogin-username">Username</div>
+            </div>
+            
+            <form id="relogin-form">
+                <div class="input-group">
+                    <div class="input-container">
+                        <i class="fas fa-user input-icon" style="color: #222222;"></i>
+                        <input type="text" id="relogin-username-input" name="username" placeholder="User name" autocomplete="off" required style="font-family: 'Montserrat', sans-serif; font-weight: 500;">
+                    </div>
+                    <div class="error-message" id="relogin-username-error">User name does not exist. Try another user name!</div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-container">
+                        <i class="fas fa-envelope input-icon" style="color: #222222;"></i>
+                        <input type="text" id="relogin-email" name="email" placeholder="Email" autocomplete="off" required style="font-family: 'Montserrat', sans-serif; font-weight: 500;">
+                    </div>
+                    <div class="error-message" id="relogin-email-error">Email does not match the entered user name!</div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-container">
+                        <i class="fas fa-key input-icon" style="color: #222222;"></i>
+                        <input type="password" id="relogin-password" name="password" placeholder="Password" autocomplete="off" required style="font-family: 'Montserrat', sans-serif; font-weight: 500;">
+                        <i class="fas fa-eye-slash toggle-password" id="toggle-relogin-password" style="color: #222222;"></i>
+                    </div>
+                    <div class="error-message" id="relogin-password-error">Password does not match the user!</div>
+                </div>
+                
+                <button type="submit" id="relogin-button" style="font-family: 'Montserrat', sans-serif; font-weight: 600; opacity: 0.7;">Log In</button>
+            </form>
+            
+            <div class="link-container">
+                <a href="Login.html" style="font-family: 'Montserrat', sans-serif; font-weight: 500; color: #3c59fa;">
+                    Log into other account
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const reloginUsernameInput = document.getElementById('relogin-username-input');
+        const reloginEmailInput = document.getElementById('relogin-email');
+        const reloginPasswordInput = document.getElementById('relogin-password');
+        const toggleReloginPassword = document.getElementById('toggle-relogin-password');
+        const reloginButton = document.getElementById('relogin-button');
+        const reloginForm = document.getElementById('relogin-form');
+        const reloginUsernameDisplay = document.getElementById('relogin-username');
+        
+        // Timers for validation
+        let reloginUsernameTimer, reloginEmailTimer, reloginPasswordTimer;
+        
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in to show username or get last username from logout
+            const savedUser = localStorage.getItem('currentUser');
+            const lastUsername = localStorage.getItem('lastUsername');
+            
+            if (savedUser) {
+                const user = JSON.parse(savedUser);
+                reloginUsernameDisplay.textContent = user.username;
+                reloginUsernameInput.value = user.username;
+            } else if (lastUsername) {
+                reloginUsernameDisplay.textContent = lastUsername;
+                reloginUsernameInput.value = lastUsername;
+                // Auto-validate the username if it's pre-filled
+                setTimeout(validateReloginUsername, 100);
+            }
+            
+            reloginUsernameInput.addEventListener('input', function() {
+                clearTimeout(reloginUsernameTimer);
+                resetValidation(reloginUsernameInput);
+                reloginUsernameTimer = setTimeout(validateReloginUsername, 2000);
+                updateReloginButton();
+            });
+            
+            reloginEmailInput.addEventListener('input', function() {
+                clearTimeout(reloginEmailTimer);
+                resetValidation(reloginEmailInput);
+                reloginEmailTimer = setTimeout(validateReloginEmail, 2000);
+                updateReloginButton();
+            });
+            
+            reloginPasswordInput.addEventListener('input', function() {
+                clearTimeout(reloginPasswordTimer);
+                resetValidation(reloginPasswordInput);
+                reloginPasswordTimer = setTimeout(validateReloginPassword, 2000);
+                updateReloginButton();
+            });
+            
+            toggleReloginPassword.addEventListener('click', function() {
+                togglePasswordVisibility(reloginPasswordInput, toggleReloginPassword);
+            });
+            
+            reloginForm.addEventListener('submit', handleRelogin);
+            
+            // Initialize button state
+            updateReloginButton();
+        });
+        
+        // Validation Functions
+        function validateReloginUsername() {
+            const username = reloginUsernameInput.value.trim();
+            const errorElement = document.getElementById('relogin-username-error');
+            
+            if (username === '') {
+                return;
+            }
+            
+            // Check if username exists by fetching accounts
+            fetch('Accounts.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(accounts => {
+                    const usernameExists = accounts.some(account => account.username === username);
+                    
+                    if (usernameExists) {
+                        reloginUsernameInput.classList.add('success-border');
+                        errorElement.style.display = 'none';
+                    } else {
+                        reloginUsernameInput.classList.add('error-border');
+                        errorElement.style.display = 'block';
+                    }
+                    updateReloginButton();
+                })
+                .catch(error => {
+                    console.error('Error checking username:', error);
+                    // Fallback: try to read from local storage if available
+                    const accounts = JSON.parse(localStorage.getItem('accounts') || '[]');
+                    const usernameExists = accounts.some(account => account.username === username);
+                    
+                    if (usernameExists) {
+                        reloginUsernameInput.classList.add('success-border');
+                        errorElement.style.display = 'none';
+                    } else {
+                        reloginUsernameInput.classList.add('error-border');
+                        errorElement.style.display = 'block';
+                    }
+                    updateReloginButton();
+                });
+        }
+        
+        function validateReloginEmail() {
+            const username = reloginUsernameInput.value.trim();
+            const email = reloginEmailInput.value.trim();
+            const errorElement = document.getElementById('relogin-email-error');
+            
+            if (email === '' || username === '') {
+                return;
+            }
+            
+            // Check if email matches username
+            fetch('Accounts.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(accounts => {
+                    const account = accounts.find(account => account.username === username);
+                    
+                    if (account && account.email === email) {
+                        reloginEmailInput.classList.add('success-border');
+                        errorElement.style.display = 'none';
+                    } else {
+                        reloginEmailInput.classList.add('error-border');
+                        errorElement.style.display = 'block';
+                    }
+                    updateReloginButton();
+                })
+                .catch(error => {
+                    console.error('Error checking email:', error);
+                    // Fallback: try to read from local storage if available
+                    const accounts = JSON.parse(localStorage.getItem('accounts') || '[]');
+                    const account = accounts.find(account => account.username === username);
+                    
+                    if (account && account.email === email) {
+                        reloginEmailInput.classList.add('success-border');
+                        errorElement.style.display = 'none';
+                    } else {
+                        reloginEmailInput.classList.add('error-border');
+                        errorElement.style.display = 'block';
+                    }
+                    updateReloginButton();
+                });
+        }
+        
+        function validateReloginPassword() {
+            const username = reloginUsernameInput.value.trim();
+            const password = reloginPasswordInput.value;
+            const errorElement = document.getElementById('relogin-password-error');
+            
+            if (password === '' || username === '') {
+                return;
+            }
+            
+            // Check if password matches username
+            fetch('Accounts.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(accounts => {
+                    const account = accounts.find(account => account.username === username);
+                    
+                    if (account && account.password === password) {
+                        reloginPasswordInput.classList.add('success-border');
+                        errorElement.style.display = 'none';
+                    } else {
+                        reloginPasswordInput.classList.add('error-border');
+                        errorElement.style.display = 'block';
+                    }
+                    updateReloginButton();
+                })
+                .catch(error => {
+                    console.error('Error checking password:', error);
+                    // Fallback: try to read from local storage if available
+                    const accounts = JSON.parse(localStorage.getItem('accounts') || '[]');
+                    const account = accounts.find(account => account.username === username);
+                    
+                    if (account && account.password === password) {
+                        reloginPasswordInput.classList.add('success-border');
+                        errorElement.style.display = 'none';
+                    } else {
+                        reloginPasswordInput.classList.add('error-border');
+                        errorElement.style.display = 'block';
+                    }
+                    updateReloginButton();
+                });
+        }
+        
+        function resetValidation(inputElement) {
+            inputElement.classList.remove('success-border');
+            inputElement.classList.remove('error-border');
+            
+            // Hide error messages
+            const errorId = inputElement.id + '-error';
+            const errorElement = document.getElementById(errorId);
+            if (errorElement) {
+                errorElement.style.display = 'none';
+            }
+        }
+        
+        function togglePasswordVisibility(passwordInput, toggleIcon) {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            }
+        }
+        
+        function updateReloginButton() {
+            const username = reloginUsernameInput.value.trim();
+            const email = reloginEmailInput.value.trim();
+            const password = reloginPasswordInput.value;
+            
+            const usernameValid = reloginUsernameInput.classList.contains('success-border');
+            const emailValid = reloginEmailInput.classList.contains('success-border');
+            const passwordValid = reloginPasswordInput.classList.contains('success-border');
+            
+            if (username && email && password && usernameValid && emailValid && passwordValid) {
+                reloginButton.disabled = false;
+                reloginButton.style.opacity = '1';
+            } else {
+                reloginButton.disabled = true;
+                reloginButton.style.opacity = '0.7';
+            }
+        }
+        
+        function handleRelogin(e) {
+            e.preventDefault();
+            
+            const username = reloginUsernameInput.value.trim();
+            
+            // Get account details
+            fetch('Accounts.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(accounts => {
+                    const account = accounts.find(account => account.username === username);
+                    
+                    if (account) {
+                        // Store user session
+                        localStorage.setItem('currentUser', JSON.stringify({
+                            username: account.username,
+                            email: account.email,
+                            walletAddress: account.walletAddress,
+                            balance: account.balance
+                        }));
+                        
+                        // Remove lastUsername from localStorage
+                        localStorage.removeItem('lastUsername');
+                        
+                        // Redirect to homepage and prevent going back
+                        window.location.replace('SFHomepage.html');
+                    } else {
+                        alert('Error: User not found');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Fallback: try to read from local storage if available
+                    const accounts = JSON.parse(localStorage.getItem('accounts') || '[]');
+                    const account = accounts.find(account => account.username === username);
+                    
+                    if (account) {
+                        // Store user session
+                        localStorage.setItem('currentUser', JSON.stringify({
+                            username: account.username,
+                            email: account.email,
+                            walletAddress: account.walletAddress,
+                            balance: account.balance
+                        }));
+                        
+                        // Remove lastUsername from localStorage
+                        localStorage.removeItem('lastUsername');
+                        
+                        // Redirect to homepage and prevent going back
+                        window.location.replace('SFHomepage.html');
+                    } else {
+                        alert('Error: User not found');
+                    }
+                });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartForge - Sign Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1>Welcome To SmartForge!</h1>
+            <h2>Please sign up to continue:</h2>
+            
+            <form id="signup-form" autocomplete="off">
+                <div class="input-group">
+                    <div class="input-container">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="username" name="username" placeholder="User name" autocomplete="off" required>
+                    </div>
+                    <div class="error-message" id="username-error">User name already exists. Try another user name!</div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-container">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="email" name="email" placeholder="Email" autocomplete="off" required>
+                    </div>
+                    <div class="error-message" id="email-error">Email is not valid!</div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-container">
+                        <i class="fas fa-key input-icon"></i>
+                        <input type="password" id="password" name="password" placeholder="Password" autocomplete="new-password" required>
+                        <i class="fas fa-eye toggle-password" id="toggle-password"></i>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-container">
+                        <i class="fas fa-key input-icon"></i>
+                        <input type="password" id="repeat-password" name="repeat-password" placeholder="Repeat password" autocomplete="new-password" required>
+                        <i class="fas fa-eye toggle-password" id="toggle-repeat-password"></i>
+                    </div>
+                    <div class="error-message" id="password-error">Passwords do not match!</div>
+                </div>
+                
+                <button type="submit" id="signup-button" disabled>Sign Up</button>
+            </form>
+            
+            <div class="link-container">
+                <a href="Login.html">
+                    I already have an account
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const usernameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const repeatPasswordInput = document.getElementById('repeat-password');
+        const togglePassword = document.getElementById('toggle-password');
+        const toggleRepeatPassword = document.getElementById('toggle-repeat-password');
+        const signupButton = document.getElementById('signup-button');
+        const signupForm = document.getElementById('signup-form');
+        
+        // Timers for validation
+        let usernameTimer, emailTimer, passwordTimer, repeatPasswordTimer;
+        
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            usernameInput.addEventListener('input', function() {
+                clearTimeout(usernameTimer);
+                resetValidation(usernameInput);
+                usernameTimer = setTimeout(validateUsername, 2000);
+                updateSignupButton();
+            });
+            
+            emailInput.addEventListener('input', function() {
+                clearTimeout(emailTimer);
+                resetValidation(emailInput);
+                emailTimer = setTimeout(validateEmail, 2000);
+                updateSignupButton();
+            });
+            
+            passwordInput.addEventListener('input', function() {
+                clearTimeout(passwordTimer);
+                resetValidation(passwordInput);
+                passwordTimer = setTimeout(validatePassword, 2000);
+                updateSignupButton();
+            });
+            
+            repeatPasswordInput.addEventListener('input', function() {
+                clearTimeout(repeatPasswordTimer);
+                resetValidation(repeatPasswordInput);
+                repeatPasswordTimer = setTimeout(validateRepeatPassword, 2000);
+                updateSignupButton();
+            });
+            
+            togglePassword.addEventListener('click', function() {
+                togglePasswordVisibility(passwordInput, togglePassword);
+            });
+            
+            toggleRepeatPassword.addEventListener('click', function() {
+                togglePasswordVisibility(repeatPasswordInput, toggleRepeatPassword);
+            });
+            
+            signupForm.addEventListener('submit', handleSignup);
+            
+            // Initialize button state
+            updateSignupButton();
+        });
+        
+        // Validation Functions
+        function validateUsername() {
+            const username = usernameInput.value.trim();
+            const errorElement = document.getElementById('username-error');
+            
+            if (username === '') {
+                return;
+            }
+            
+            // Check if username exists by fetching accounts
+            fetch('Accounts.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(accounts => {
+                    const usernameExists = accounts.some(account => account.username === username);
+                    
+                    if (usernameExists) {
+                        usernameInput.classList.add('error-border');
+                        errorElement.style.display = 'block';
+                    } else {
+                        usernameInput.classList.add('success-border');
+                        errorElement.style.display = 'none';
+                    }
+                    updateSignupButton();
+                })
+                .catch(error => {
+                    console.error('Error checking username:', error);
+                    // Fallback: try to read from local storage if available
+                    const accounts = JSON.parse(localStorage.getItem('accounts') || '[]');
+                    const usernameExists = accounts.some(account => account.username === username);
+                    
+                    if (usernameExists) {
+                        usernameInput.classList.add('error-border');
+                        errorElement.style.display = 'block';
+                    } else {
+                        usernameInput.classList.add('success-border');
+                        errorElement.style.display = 'none';
+                    }
+                    updateSignupButton();
+                });
+        }
+        
+        function validateEmail() {
+            const email = emailInput.value.trim();
+            const errorElement = document.getElementById('email-error');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (email === '') {
+                return;
+            }
+            
+            if (!emailRegex.test(email)) {
+                emailInput.classList.add('error-border');
+                errorElement.style.display = 'block';
+            } else {
+                emailInput.classList.add('success-border');
+                errorElement.style.display = 'none';
+            }
+            updateSignupButton();
+        }
+        
+        function validatePassword() {
+            const password = passwordInput.value;
+            
+            if (password === '') {
+                return;
+            }
+            
+            passwordInput.classList.add('success-border');
+            updateSignupButton();
+        }
+        
+        function validateRepeatPassword() {
+            const password = passwordInput.value;
+            const repeatPassword = repeatPasswordInput.value;
+            const errorElement = document.getElementById('password-error');
+            
+            if (repeatPassword === '') {
+                return;
+            }
+            
+            if (password !== repeatPassword) {
+                repeatPasswordInput.classList.add('error-border');
+                errorElement.style.display = 'block';
+            } else {
+                repeatPasswordInput.classList.add('success-border');
+                errorElement.style.display = 'none';
+            }
+            updateSignupButton();
+        }
+        
+        function resetValidation(inputElement) {
+            inputElement.classList.remove('success-border');
+            inputElement.classList.remove('error-border');
+            
+            // Hide error messages
+            const errorId = inputElement.id + '-error';
+            const errorElement = document.getElementById(errorId);
+            if (errorElement) {
+                errorElement.style.display = 'none';
+            }
+        }
+        
+        function togglePasswordVisibility(passwordInput, toggleIcon) {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+        
+        function updateSignupButton() {
+            const username = usernameInput.value.trim();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            const repeatPassword = repeatPasswordInput.value;
+            
+            const usernameValid = !usernameInput.classList.contains('error-border') && 
+                                 usernameInput.classList.contains('success-border');
+            const emailValid = !emailInput.classList.contains('error-border') && 
+                              emailInput.classList.contains('success-border');
+            const passwordValid = passwordInput.classList.contains('success-border');
+            const repeatPasswordValid = repeatPasswordInput.classList.contains('success-border');
+            
+            if (username && email && password && repeatPassword && 
+                usernameValid && emailValid && passwordValid && repeatPasswordValid) {
+                signupButton.disabled = false;
+            } else {
+                signupButton.disabled = true;
+            }
+        }
+        
+        function handleSignup(e) {
+            e.preventDefault();
+            
+            const username = usernameInput.value.trim();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            
+            // Send data to PHP for processing
+            fetch('save_account.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    email: email,
+                    password: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Store user session (in a real app, you'd use proper session management)
+                    localStorage.setItem('currentUser', JSON.stringify({
+                        username: username,
+                        email: email,
+                        walletAddress: data.walletAddress,
+                        balance: 0
+                    }));
+                    
+                    // Also store accounts in localStorage as fallback
+                    fetch('Accounts.json')
+                        .then(response => response.json())
+                        .then(accounts => {
+                            localStorage.setItem('accounts', JSON.stringify(accounts));
+                        })
+                        .catch(error => {
+                            console.error('Error storing accounts in localStorage:', error);
+                        });
+                    
+                    // Redirect to homepage
+                    window.location.href = 'SFHomepage.html';
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred during signup');
+            });
+        }
+    </script>
+</body>
+</html>

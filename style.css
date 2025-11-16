@@ -1,0 +1,961 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    background-color: #070707;
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: all 1.5s ease;
+}
+
+.container {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-container {
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    font-weight: 600;
+    font-size: 24px;
+    color: #3c59fa;
+    text-align: center;
+}
+
+h2 {
+    font-weight: 500;
+    font-size: 18px;
+    color: #ffffff;
+    text-align: center;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 15px;
+    color: #222222;
+    font-size: 18px;
+}
+
+input {
+    width: 100%;
+    padding: 15px 15px 15px 45px;
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 8px;
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+input::placeholder {
+    color: #8a8a8a;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    color: #222222;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.error-message {
+    color: #ff0000;
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 5px;
+    display: none;
+}
+
+.success-border {
+    border: 1px solid #00ff09 !important;
+}
+
+.error-border {
+    border: 1px solid #ff0000 !important;
+}
+
+button {
+    padding: 15px;
+    background-color: #3c59fa;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.link-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+a {
+    color: #3c59fa;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Homepage Styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.header-icons {
+    display: flex;
+    gap: 15px;
+}
+
+.header-icon {
+    color: #ffffff;
+    font-size: 20px;
+    cursor: pointer;
+    position: relative;
+}
+
+.notification-dot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background-color: #ff0000;
+    border-radius: 50%;
+}
+
+.balance-container {
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.balance-header {
+    color: #8a8a8a;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.balance-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.balance-amount {
+    font-size: 28px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.balance-options {
+    display: none;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #444;
+}
+
+.balance-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    cursor: pointer;
+}
+
+.balance-option.active {
+    color: #3c59fa;
+}
+
+.sui-logo {
+    width: 34px;
+    height: 34px;
+    background-image: url('Sui_logo.png');
+    background-repeat: no-repeat;
+    background-origin: center;
+    background-size: contain;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #070707;
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: -7px;
+}
+
+.button-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.action-button {
+    flex: 1;
+    background-color: #ffffff;
+    color: #070707;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.create-contract-button {
+    width: 100%;
+    background-color: #3c59fa;
+    color: #ffffff;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    margin-bottom: 25px;
+    cursor: pointer;
+}
+
+.explore-section {
+    margin-top: 10px;
+}
+
+.explore-heading {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+.community-blocks {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.block-row {
+    display: flex;
+    gap: 15px;
+}
+
+.community-block {
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.community-block:hover {
+    background-color: #252525;
+}
+
+.sui-community {
+    width: 100%;
+}
+
+.sui-dev-community {
+    flex: 2;
+}
+
+.web3-comments {
+    flex: 1;
+}
+
+.block-title {
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.block-description {
+    font-size: 12px;
+    color: #8a8a8a;
+}
+
+/* Updated Toggle Menu */
+.toggle-menu {
+    position: fixed;
+    top: 0;
+    left: -350px;
+    width: 350px;
+    height: 100%;
+    background-color: #1a1a1a;
+    z-index: 1000;
+    padding: 20px;
+    transition: left 1.5s ease;
+    overflow-y: auto;
+}
+
+.toggle-menu.active {
+    left: 0;
+}
+
+.menu-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 30px;
+}
+
+.close-menu {
+    color: #ffffff;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.menu-user {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #333;
+}
+
+.user-avatar {
+    width: 70px;
+    height: 70px;
+    background-color: #3c59fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+}
+
+.user-name {
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.settings-heading {
+    font-weight: 500;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.settings-row {
+    padding: 15px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom:0px !important;
+}
+
+.settings-row i:first-child {
+    width: 20px;
+    margin-right: 10px;
+}
+
+.settings-row i:last-child {
+    color: #3c59fa;
+}
+
+/* Updated Welcome Popup */
+.welcome-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    display: none;
+}
+
+.popup-content {
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+}
+
+.popup-content .close-popup {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: #ffffff;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.popup-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #3c59fa;
+    margin-bottom: 15px;
+    margin-top: 20px;
+}
+
+.popup-message {
+    margin-bottom: 20px;
+    line-height: 1.5;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.check-animation {
+    margin: 20px 0;
+}
+
+/* Relogin Page Styles */
+.user-avatar-large {
+    width: 80px;
+    height: 80px;
+    background-color: #3c59fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 35px;
+    margin: 0 auto;
+}
+
+.user-name-large {
+    font-weight: 500;
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+input {
+    margin-bottom: 0.5rem;
+}
+
+#email, #login-email,  #repeat-password {
+    background:#fff;
+    color: #070707;
+    
+}
+.fas-input-icon,.input-icon, .fa-eye, .fa-eye-slash {
+    margin-bottom: 0.4rem;
+}
+
+.balance-amount{
+    color: #070707;
+    font-size: 34px;
+}
+#balance-amount {
+    color: #fff;
+}
+.error-message {
+    font-size: 11px;
+  margin-top: calc(-0.5rem - 3px);
+  display: none;
+ text-align: right;
+  margin-bottom: 0.5rem;
+}
+.button-row {
+  display: flex;
+  gap: 13px;
+  margin-bottom: 14px !important;
+}
+.balance-container {
+    transition: all 0.3s ease;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+#balance-chevron {
+  margin-left: 0.5rem;
+  font-size: 23px;
+}
+#balance-amount {
+  font-size: 2.5rem;
+}
+.header{
+    background-color: #070707;
+}
+#receive-button .fa-arrow-up-right-from-square {
+    transform: rotate(180deg);
+  transform-origin: center;
+    
+}
+/* Add these new styles to your existing style.css */
+
+/* New Toggle Menu Styles */
+.menu-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 30px;
+}
+
+.menu-user {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #333;
+}
+
+.settings-heading {
+    font-weight: 500;
+    font-size: 18px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.settings-row {
+    padding: 15px 0;
+    border-bottom: 1px solid #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.settings-icon {
+    width: 20px;
+    color: #ffffff;
+}
+
+.chevron-icon {
+    color: #3c59fa;
+}
+
+/* New Welcome Popup Styles */
+.welcome-popup .popup-content {
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+}
+
+.welcome-popup .close-popup {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: #ffffff;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.popup-heading {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.popup-subheading {
+    font-size: 18px;
+    margin-bottom: 25px;
+    line-height: 1.4;
+}
+
+.check-animation {
+    margin: 20px 0;
+}
+
+/* Relogin Page Styles */
+.form-container .menu-user {
+    margin: 20px 0;
+}
+
+.form-container .user-avatar {
+    width: 60px;
+    height: 60px;
+    background-color: #3c59fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.form-container .user-name {
+    font-weight: 500;
+    font-size: 16px;
+}
+input {
+    background-color: #fff !important;
+    color:#070707;
+}
+
+.user-avatar{
+    background-color: #222222;
+  width: 84px;
+  height: 84px;
+}
+
+.toggle-menu{
+    transition: left 0.3s ease;
+}
+
+#relogin-button {
+  padding: 15px 45px;
+}
+.menu-user {
+    border-bottom: 0px !important;
+    margin-bottom: 0px !important;
+}
+.form-container .user-avatar {
+  width: 84px;
+  height: 84px;
+      background-color: #222;}
+      .menu-user .user-avatar .fas.fa-user {
+  font-size: 2.5rem;
+}
+input {
+  margin-bottom: 0.8rem;
+}
+.form-container {
+  background-color: #070707;}
+
+.header i {
+  font-size: 1.6rem;
+}
+#menu-toggle{
+    font-size: 1.7rem;
+}
+#close-menu {
+  font-size: 1.7rem;
+}
+#close-menu {
+  font-size: 1.7rem;
+}
+.input-icon, .fa-eye, .fa-eye-slash {
+  margin-bottom: 0.68rem;
+}
+/*button {padding: 14px 40px;}
+/* New styles for Send, Receive, and CreateContract tabs */
+.send-page, .receive-page, .create-contract-page {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.send-input {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid #444 !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    color: #fff !important;
+}
+
+.send-input::placeholder {
+    color: #8a8a8a !important;
+}
+
+.chain-name-input {
+    text-align: right;
+    color: #8a8a8a !important;
+}
+
+.balance-section {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+    color: #070707;
+}
+
+.balance-section div:first-child {
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.balance-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.qr-container {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.wallet-address {
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    text-align: center;
+    word-break: break-all;
+}
+
+.contract-option {
+    background-color: #fff;
+    color: #070707;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.rewards-option {
+    background-color: #3c59fa;
+    color: #fff;
+}
+
+.transaction-popup, .copy-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.transaction-popup-content, .copy-popup-content {
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+}
+
+.transaction-message {
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+.copy-message {
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+.copy-success-icon {
+    color: #3c59fa;
+    font-size: 40px;
+}
+.button-row {
+    margin-bottom: 15px !important;
+}
+.header {
+    margin-top: -20px;
+}
+.balance-container{
+    height:16rem;
+}
+#send-transaction-button {
+ margin-top: 0.8rem;
+  box-sizing: content-box;
+  width: 9rem !important;
+}
+.contract-options span {
+  font-weight: 500;}
+  
+  /* New styles for Fund Raiser and Escrow tabs */
+.fundraiser-page, .escrow-page {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.contract-input {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid #444 !important;
+    border-radius: 0 !important;
+    padding: 15px 0 !important;
+    color: #fff !important;
+    width: 100%;
+}
+
+.contract-input::placeholder {
+    color: #8a8a8a !important;
+}
+
+.contract-deployment-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.contract-deployment-popup-content {
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+}
+
+.contract-deployment-message {
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+.contract-deployment-animation {
+    margin: 20px 0;
+}
+
+#deploy-fundraiser-button, #deploy-escrow-button {
+  margin-top: 1.2rem;
+  box-sizing: content-box;
+  width: 9rem !important;
+  float: right;
+}
+#fundraiser-page h1 {
+  font-size: 1.9rem;
+}
+#escrow-page h1 {
+  font-size: 2rem;
+}
+#receive-page h1, #send-page h1{
+  font-size: 2rem;
+}
+button {
+    width: 9rem;
+}
+.form-container h2 {
+  margin-bottom: 2rem;
+}
+.balance-section{
+    margin-top: 0px;
+}
+#send-page {
+  margin-top: -16rem;
+}
+#receive-page {
+  margin-top: -12.5rem;
+}
+#create-contract-page {
+  margin-top: -17.6rem;
+}
+
+/* NEW: heading for "Interested in how smart contracts work?" */
+.how-contracts-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #3c59fa;
+    font-weight: 500;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.how-contracts-heading i {
+    margin-left: 8px;
+}
+
+/* NEW: password toggle button styling in Account page */
+.password-toggle-btn {
+    width: 100%;
+    background-color: #1a1a1a;
+    color: #3c59fa;
+    border: 1px solid #3c59fa;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 14px;
+}
+
+/* To keep Contract-style inputs for account/password fields */
+.account-page .contract-input {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid #444 !important;
+    border-radius: 0 !important;
+    padding: 15px 0 !important;
+    color: #fff !important;
+}
+
+/* NEW: remove chevron (spin buttons) only on Limits page number inputs */
+.limits-page input[type="number"]::-webkit-outer-spin-button,
+.limits-page input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.limits-page input[type="number"] {
+    -moz-appearance: textfield;
+}
+.tutorial-dot {
+  
+  font-size: 2rem;
+}

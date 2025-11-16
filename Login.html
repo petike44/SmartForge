@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartForge - Log In</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1 style="margin-bottom: 2rem;">Welcome Back!</h1>
+            
+            <form id="login-form" autocomplete="off">
+                <div class="input-group">
+                    <div class="input-container">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="login-username" name="username" placeholder="User name" autocomplete="off" required>
+                    </div>
+                    <div class="error-message" id="login-username-error">User name does not exist. Try another user name!</div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-container">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="text" id="login-email" name="email" placeholder="Email" autocomplete="off" required>
+                    </div>
+                    <div class="error-message" id="login-email-error">Email does not match the entered user name!</div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-container">
+                        <i class="fas fa-key input-icon"></i>
+                        <input type="password" id="login-password" name="password" placeholder="Password" autocomplete="new-password" required>
+                        <i class="fas fa-eye toggle-password" id="toggle-login-password"></i>
+                    </div>
+                    <div class="error-message" id="login-password-error">Password does not match the user!</div>
+                </div>
+                
+                <button type="submit" id="login-button" disabled>Log In</button>
+            </form>
+            
+            <div class="link-container">
+                <a href="SignUp.html">
+                    Create a new account
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loginUsernameInput = document.getElementById('login-username');
+        const loginEmailInput = document.getElementById('login-email');
+        const loginPasswordInput = document.getElementById('login-password');
+        const toggleLoginPassword = document.getElementById('toggle-login-password');
+        const loginButton = document.getElementById('login-button');
+        const loginForm = document.getElementById('login-form');
+        
+        // Timers for validation
+        let loginUsernameTimer, loginEmailTimer, loginPasswordTimer;
+        
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            loginUsernameInput.addEventListener('input', function() {
+                clearTimeout(loginUsernameTimer);
+                resetValidation(loginUsernameInput);
+                loginUsernameTimer = setTimeout(validateLoginUsername, 2000);
+                updateLoginButton();
+            });
+            
+            loginEmailInput.addEventListener('input', function() {
+                clearTimeout(loginEmailTimer);
+                resetValidation(loginEmailInput);
+                loginEmailTimer = setTimeout(validateLoginEmail, 2000);
+                updateLoginButton();
+            });
+            
+            loginPasswordInput.addEventListener('input', function() {
+                clearTimeout(loginPasswordTimer);
+                resetValidation(loginPasswordInput);
+                loginPasswordTimer = setTimeout(validateLoginPassword, 2000);
+                updateLoginButton();
+            });
+            
+            toggleLoginPassword.addEventListener('click', function() {
+                togglePasswordVisibility(loginPasswordInput, toggleLoginPassword);
+            });
+            
+            loginForm.addEventListener('submit', handleLogin);
+            
+            // Initialize button state
+            updateLoginButton();
+        });
+        
+        // Validation Functions
+        function validateLoginUsername() {
+            const username = loginUsernameInput.value.trim();
+            const errorElement = document.getElementById('login-username-error');
+            
+            if (username === '') {
+                return;
+            }
+            
+            // Check if username exists by fetching accounts
+            fetch('Accounts.json')
+                .then(response => response.json())
+                .then(accounts => {
+                    const usernameExists = accounts.some(account => account.username === username);
+                    
+                    if (usernameExists) {
+                        loginUsernameInput.classList.add('success-border');
+                        errorElement.style.display = 'none';
+                    } else {
+                        loginUsernameInput.classList.add('error-border');
+                        errorElement.style.display = 'block';
+                    }
+                    updateLoginButton();
+                })
+                .catch(error => {
+                    console.error('Error checking username:', error);
+                });
+        }
+        
+        function validateLoginEmail() {
+            const username = loginUsernameInput.value.trim();
+            const email = loginEmailInput.value.trim();
+            const errorElement = document.getElementById('login-email-error');
+            
+            if (email === '' || username === '') {
+                return;
+            }
+            
+            // Check if email matches username
+            fetch('Accounts.json')
+                .then(response => response.json())
+                .then(accounts => {
+                    const account = accounts.find(account => account.username === username);
+                    
+                    if (account && account.email === email) {
+                        loginEmailInput.classList.add('success-border');
+                        errorElement.style.display = 'none';
+                    } else {
+                        loginEmailInput.classList.add('error-border');
+                        errorElement.style.display = 'block';
+                    }
+                    updateLoginButton();
+                })
+                .catch(error => {
+                    console.error('Error checking email:', error);
+                });
+        }
+        
+        function validateLoginPassword() {
+            const username = loginUsernameInput.value.trim();
+            const password = loginPasswordInput.value;
+            const errorElement = document.getElementById('login-password-error');
+            
+            if (password === '' || username === '') {
+                return;
+            }
+            
+            // Check if password matches username
+            fetch('Accounts.json')
+                .then(response => response.json())
+                .then(accounts => {
+                    const account = accounts.find(account => account.username === username);
+                    
+                    if (account && account.password === password) {
+                        loginPasswordInput.classList.add('success-border');
+                        errorElement.style.display = 'none';
+                    } else {
+                        loginPasswordInput.classList.add('error-border');
+                        errorElement.style.display = 'block';
+                    }
+                    updateLoginButton();
+                })
+                .catch(error => {
+                    console.error('Error checking password:', error);
+                });
+        }
+        
+        function resetValidation(inputElement) {
+            inputElement.classList.remove('success-border');
+            inputElement.classList.remove('error-border');
+            
+            // Hide error messages
+            const errorId = inputElement.id + '-error';
+            const errorElement = document.getElementById(errorId);
+            if (errorElement) {
+                errorElement.style.display = 'none';
+            }
+        }
+        
+        function togglePasswordVisibility(passwordInput, toggleIcon) {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+        
+        function updateLoginButton() {
+            const username = loginUsernameInput.value.trim();
+            const email = loginEmailInput.value.trim();
+            const password = loginPasswordInput.value;
+            
+            const usernameValid = loginUsernameInput.classList.contains('success-border');
+            const emailValid = loginEmailInput.classList.contains('success-border');
+            const passwordValid = loginPasswordInput.classList.contains('success-border');
+            
+            if (username && email && password && usernameValid && emailValid && passwordValid) {
+                loginButton.disabled = false;
+            } else {
+                loginButton.disabled = true;
+            }
+        }
+        
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const username = loginUsernameInput.value.trim();
+            
+            // Get account details
+            fetch('Accounts.json')
+                .then(response => response.json())
+                .then(accounts => {
+                    const account = accounts.find(account => account.username === username);
+                    
+                    if (account) {
+                        // Store user session
+                        localStorage.setItem('currentUser', JSON.stringify({
+                            username: account.username,
+                            email: account.email,
+                            walletAddress: account.walletAddress,
+                            balance: account.balance
+                        }));
+                        
+                        // Redirect to homepage
+                        window.location.href = 'SFHomepage.html';
+                    } else {
+                        alert('Error: User not found');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred during login');
+                });
+        }
+    </script>
+</body>
+</html>
