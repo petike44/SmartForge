@@ -580,6 +580,8 @@
     const helpCenterPage = document.getElementById('help-center-page');
     const tutorialPage = document.getElementById('tutorial-page');
 
+    // (desktop preview removed)
+
     // Transaction popup elements
     const transactionPopup = document.getElementById('transaction-popup');
     const transactionMessage = document.getElementById('transaction-message');
@@ -1272,6 +1274,10 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+        // Temporary testing bypass: use ?test=1 or set localStorage 'bypassLogin' = 'true'
+        const params = new URLSearchParams(window.location.search);
+        const bypassLogin = params.has('test') || params.has('bypass') || localStorage.getItem('bypassLogin') === 'true';
+
         // Check if user is logged in
         const savedUser = localStorage.getItem('currentUser');
         if (savedUser) {
@@ -1296,8 +1302,20 @@
 
             // Load wallet address + balance (Accounts.json + on-chain override)
             loadWalletAddress();
+        } else if (bypassLogin) {
+            // Create a lightweight test user for UI preview (no real auth)
+            currentUser = {
+                username: 'TestUser',
+                email: 'test@example.com',
+                walletAddress: generateRandomSuiAddress(),
+                balance: 0
+            };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            updateUserInfo();
+            loadWalletAddress();
         } else {
-            // Redirect to login if not logged in
+            // Redirect to login if not logged in and no bypass flag
             window.location.href = 'Login.html';
             return;
         }
@@ -1363,11 +1381,8 @@
 
         // --------- TAB NAVIGATION ----------
         document.getElementById('send-button').addEventListener('click', function () {
-            hideAllPages();
-            sendPage.style.display = 'block';
-            loadOnChainBalance().then(() => {
-                updateSendBalance();
-            });
+            // Redirect to a simple Coming Soon page instead of send flow
+            window.location.href = 'ComingSoon.html';
         });
 
         document.getElementById('receive-button').addEventListener('click', function () {
@@ -1378,8 +1393,8 @@
         });
 
         document.getElementById('create-contract-button').addEventListener('click', function () {
-            hideAllPages();
-            createContractPage.style.display = 'block';
+            // Navigate to the dedicated generator page where the form lives
+            window.location.href = 'contract-generator/';
         });
 
         // Tutorial heading -> tutorial tab (moved from homepage)
@@ -1794,6 +1809,8 @@
         updateBalanceDisplay();
         updateSendBalance();
     });
+
+    // (desktop preview logic removed)
     </script>
 </body>
 </html>

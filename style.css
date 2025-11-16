@@ -26,6 +26,18 @@ body {
     gap: 20px;
 }
 
+/* Stretch layout on desktop (remove mobile phone look) */
+@media (min-width: 1024px) {
+    body {
+        align-items: stretch;
+        justify-content: flex-start;
+    }
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+}
+
 .form-container {
     background-color: #1a1a1a;
     border-radius: 12px;

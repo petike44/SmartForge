@@ -1,0 +1,76 @@
+module {{PACKAGE_ADDRESS}}::fund {
+    use sui::coin::{Self, Coin};
+    use sui::event;
+    use sui::sui::SUI;
+    use sui::object::{Self, UID, ID};
+    use sui::tx_context::{Self, TxContext};
+    // transfer is available by default in Sui Move
+
+    /// Error code for tip too small
+    const ERROR_TIP_TOO_SMALL: u64 = 1;
+
+    /// Fund object
+    public struct Fund has key, store {
+        id: UID,
+        owner: address,
+        total_tips: u64,
+        tip_count: u64,
+    }
+
+    /// Events
+    public struct FundCreated has copy, drop {
+        fund_id: ID,
+        owner: address,
+    }
+
+    public struct Funded has copy, drop {
+        funder: address,
+        amount: u64,
+        total_tips: u64,
+        tip_count: u64,
+    }
+
+    /// Create a new fund (owner is transaction sender)
+    public entry fun create_fund(ctx: &mut TxContext) {
+        let owner = tx_context::sender(ctx);
+        let fund = Fund {
+            id: object::new(ctx),
+            owner,
+            total_tips: 0,
+            tip_count: 0,
+        };
+
+        event::emit(FundCreated {
+            fund_id: object::id(&fund),
+            owner,
+        });
+
+        // Transfer fund object to owner
+        transfer::public_transfer(fund, owner);
+    }
+
+    /// Tip a fund (minimum enforced)
+    public entry fun tip(fund: &mut Fund, payment: Coin<SUI>, ctx: &mut TxContext) {
+        let tip_amount = coin::value(&payment);
+        assert!(tip_amount > {{MIN_TIP_AMOUNT}}, ERROR_TIP_TOO_SMALL);
+
+        // Transfer the coin directly to fund owner
+        transfer::public_transfer(payment, fund.owner);
+
+        fund.total_tips = fund.total_tips + tip_amount;
+        fund.tip_count = fund.tip_count + 1;
+
+        event::emit(Funded {
+            funder: tx_context::sender(ctx),
+            amount: tip_amount,
+            total_tips: fund.total_tips,
+            tip_count: fund.tip_count,
+        });
+    }
+
+    /// View functions
+    public fun get_owner(f: &Fund): address { f.owner }
+    public fun get_total_tips(f: &Fund): u64 { f.total_tips }
+    public fun get_tip_count(f: &Fund): u64 { f.tip_count }
+    public fun is_owner(f: &Fund, addr: address): bool { f.owner == addr }
+}

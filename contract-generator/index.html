@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SmartForge – Move Contract Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Local styles for the generator only -->
+  <link rel="stylesheet" href="./style.css" />
+
+  <!-- Optional: highlight.js for code preview styling (dark) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-row">
+      <div class="brand-wrap">
+        <h1 class="brand">SmartForge</h1>
+        <p class="subtitle">Move Smart Contract Generator</p>
+      </div>
+      <nav>
+        <a class="nav-link" href="../SFHomepage.html">← Back to Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container main-grid" aria-live="polite">
+    <section class="card" aria-labelledby="formTitle">
+      <h2 id="formTitle" class="section-title">Create Your Contract</h2>
+
+      <div class="form-row">
+        <label for="templateSelect">Template</label>
+        <select id="templateSelect" aria-describedby="templateHelp">
+          <option value="escrow" selected>Escrow</option>
+          <option value="fundraising">Fundraising</option>
+        </select>
+        <p id="templateHelp" class="help-text">Choose a template. Fields update automatically.</p>
+      </div>
+
+      <div id="dynamicFields" class="fields"></div>
+
+      <div class="actions">
+        <button id="generateBtn" class="btn primary">Generate Contract</button>
+        <button id="copyBtn" class="btn ghost" disabled>Copy</button>
+        <button id="downloadBtn" class="btn ghost" disabled>Download .move</button>
+      </div>
+
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="card sticky" aria-labelledby="previewTitle">
+      <h2 id="previewTitle" class="section-title">Code Preview</h2>
+      <div class="preview" id="previewContainer">
+        <pre><code id="codeOutput" class="language-move"></code></pre>
+      </div>
+      <noscript>
+        <p class="noscript">This tool needs JavaScript enabled.</p>
+      </noscript>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <small>© <span id="year"></span> SmartForge. Generated locally in your browser.</small>
+    </div>
+  </footer>
+
+  <!-- highlight.js (optional) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-/+kqD2nCsd5Wn6XqQh8WqOQ0Fm3+1+6JYlCw/2g6m2vG2g1H6mGd9Yt7y6B2Yh8K6p4uG2z7ZkH2YV2xG8d8wA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <!-- App logic -->
+  <script src="./app.js"></script>
+  <script>
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+    // Initialize highlighting if available
+    if (window.hljs) {
+      hljs.configure({ ignoreUnescapedHTML: true });
+    }
+  </script>
+</body>
+</html>

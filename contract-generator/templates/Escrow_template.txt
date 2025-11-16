@@ -1,0 +1,129 @@
+module {{PACKAGE_ADDRESS}}::escrow {
+    use sui::coin::{Self, Coin};
+    use sui::event;
+    use sui::sui::SUI;
+    use sui::balance::{Self, Balance};
+    use sui::object::{Self, UID, ID};
+    use sui::transfer;
+    use sui::tx_context::TxContext;
+
+    /// Escrow status
+    public enum Status has copy, drop, store { 
+        Pending, 
+        Completed, 
+        Cancelled 
+    }
+
+    /// Escrow struct using Balance for efficiency
+    public struct Escrow has key, store {
+        id: UID,
+        sender: address,
+        receiver: address,
+        balance: Balance<SUI>,
+        status: Status,
+    }
+
+    /// Events
+    public struct EscrowCreated has copy, drop {
+        escrow_id: ID,
+        sender: address,
+        receiver: address,
+        amount: u64,
+    }
+
+    public struct EscrowCompleted has copy, drop {
+        escrow_id: ID,
+    }
+
+    public struct EscrowCancelled has copy, drop {
+        escrow_id: ID,
+    }
+
+    /// Create an escrow
+    public entry fun create_escrow(
+        receiver: address, 
+        payment: Coin<SUI>, 
+        ctx: &mut TxContext
+    ) {
+        let sender = tx_context::sender(ctx);
+        let amount = coin::value(&payment);
+        let balance = coin::into_balance(payment);
+        
+        let escrow = Escrow {
+            id: object::new(ctx),
+            sender,
+            receiver,
+            balance,
+            status: Status::Pending,
+        };
+
+        let escrow_id = object::id(&escrow);
+        
+        event::emit(EscrowCreated {
+            escrow_id,
+            sender,
+            receiver,
+            amount,
+        });
+
+        // Share the escrow object so both parties can interact
+        transfer::public_share_object(escrow);
+    }
+
+    /// Complete escrow (send funds to receiver)
+    public entry fun complete_escrow(escrow: Escrow, ctx: &mut TxContext) {
+        assert!(escrow.status == Status::Pending, 1);
+        
+        let escrow_id = object::id(&escrow);
+        let Escrow { id, sender: _, receiver, balance, status: _ } = escrow;
+        
+        // Convert balance to coin and send to receiver
+        let coin = coin::from_balance(balance, ctx);
+        transfer::public_transfer(coin, receiver);
+        
+        event::emit(EscrowCompleted { 
+            escrow_id 
+        });
+        
+        // Delete the escrow object
+        object::delete(id);
+    }
+
+    /// Cancel escrow (refund sender)
+    public entry fun cancel_escrow(escrow: Escrow, ctx: &mut TxContext) {
+        assert!(escrow.status == Status::Pending, 2);
+        
+        let escrow_id = object::id(&escrow);
+        let Escrow { id, sender, receiver: _, balance, status: _ } = escrow;
+        
+        // Convert balance to coin and refund sender
+        let coin = coin::from_balance(balance, ctx);
+        transfer::public_transfer(coin, sender);
+        
+        event::emit(EscrowCancelled { 
+            escrow_id 
+        });
+        
+        // Delete the escrow object
+        object::delete(id);
+    }
+
+    /// Update escrow status (only while pending)
+    public fun update_escrow_status(escrow: &mut Escrow, new_status: Status) {
+        assert!(escrow.status == Status::Pending, 3);
+        escrow.status = new_status;
+    }
+
+    /// Update receiver address (only while pending)
+    public fun update_receiver(escrow: &mut Escrow, new_receiver: address) {
+        assert!(escrow.status == Status::Pending, 4);
+        escrow.receiver = new_receiver;
+    }
+
+    /// View functions
+    public fun get_sender(e: &Escrow): address { e.sender }
+    public fun get_receiver(e: &Escrow): address { e.receiver }
+    public fun get_status(e: &Escrow): Status { e.status }
+    public fun get_amount(e: &Escrow): u64 { balance::value(&e.balance) }
+    public fun get_escrow_id(e: &Escrow): ID { object::id(e) }
+}
